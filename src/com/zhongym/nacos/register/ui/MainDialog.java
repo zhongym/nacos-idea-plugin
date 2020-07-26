@@ -71,23 +71,27 @@ public class MainDialog extends JDialog {
         initBaseServerState();
 
         //目标控件初始化
-        targetStateComboBox.removeAllItems();
-        for (StateEnum stateEnum : StateEnum.values()) {
-            targetStateComboBox.addItem(stateEnum);
-        }
-        targetStateComboBox.addActionListener(e -> {
-            flushTargetServicePanel();
-        });
-
-        targetIpComboBox.removeAllItems();
-        for (IpEnum ipEnum : IpEnum.values()) {
-            targetIpComboBox.addItem(ipEnum);
-        }
-        targetIpComboBox.addActionListener(e -> {
-            flushTargetServicePanel();
-        });
+        initTargetNacos();
 
         //源控件初始化
+        initSourceNacos();
+
+        //公共按钮
+        bgButton.addActionListener(e -> {
+            MainDialog.this.setVisible(false);
+        });
+        closeButton.addActionListener(e -> onClose());
+        settingButton.addActionListener(e -> {
+            ConfigDialog configDialog = new ConfigDialog(MainDialog.this);
+            configDialog.setLocation((int) (MainDialog.this.getLocation().getX() + MainDialog.this.getLocation().getX() / 2),
+                    (int) (MainDialog.this.getLocation().getY() + MainDialog.this.getLocation().getY() / 2));
+            configDialog.pack();
+            configDialog.setVisible(true);
+        });
+
+    }
+
+    private void initSourceNacos() {
         sourceFilterJobCheckBox.setSelected(true);
         sourceFilterJobCheckBox.addActionListener(e -> {
             flushSourceServicePanel();
@@ -115,23 +119,26 @@ public class MainDialog extends JDialog {
 
         sourceRegisterButton.addActionListener(e -> register());
 
-
-        //公共按钮
-        bgButton.addActionListener(e -> {
-            MainDialog.this.setVisible(false);
-        });
-        closeButton.addActionListener(e -> onClose());
-        settingButton.addActionListener(e -> {
-            ConfigDialog configDialog = new ConfigDialog(MainDialog.this);
-            configDialog.setLocation((int) (MainDialog.this.getLocation().getX() + MainDialog.this.getLocation().getX() / 2),
-                    (int) (MainDialog.this.getLocation().getY() + MainDialog.this.getLocation().getY() / 2));
-            configDialog.pack();
-            configDialog.setVisible(true);
-        });
-
-
-        //获取所有源服务名称列表
         flushSourceServicePanel();
+    }
+
+    private void initTargetNacos() {
+        targetStateComboBox.removeAllItems();
+        for (StateEnum stateEnum : StateEnum.values()) {
+            targetStateComboBox.addItem(stateEnum);
+        }
+        targetStateComboBox.addActionListener(e -> {
+            flushTargetServicePanel();
+        });
+
+        targetIpComboBox.removeAllItems();
+        for (IpEnum ipEnum : IpEnum.values()) {
+            targetIpComboBox.addItem(ipEnum);
+        }
+        targetIpComboBox.addActionListener(e -> {
+            flushTargetServicePanel();
+        });
+
         flushTargetServicePanel();
     }
 
