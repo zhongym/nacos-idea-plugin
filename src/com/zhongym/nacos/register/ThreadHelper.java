@@ -1,17 +1,28 @@
 package com.zhongym.nacos.register;
 
 import javax.swing.*;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Yuanmao.Zhong
  */
 public class ThreadHelper {
-    private static final ExecutorService executor = Executors.newFixedThreadPool(5,(r) -> new Thread(r, "async-task-thread"));
+    private static final ScheduledExecutorService executor = Executors.newScheduledThreadPool(5, (r) -> new Thread(r, "async-task-thread"));
 
     public static void async(Runnable task) {
         executor.submit(task);
+    }
+
+    public static void delay(Runnable task, int seconds) {
+        executor.schedule(task, seconds, TimeUnit.SECONDS);
+    }
+
+    public static void delayOnUIThread(Runnable task, int seconds) {
+        executor.schedule(() -> {
+            onUIThread(task);
+        }, seconds, TimeUnit.SECONDS);
     }
 
     @SuppressWarnings("all")

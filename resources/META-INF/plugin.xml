@@ -29,7 +29,7 @@
   <actions>
     <!-- Add your actions here -->
     <!-- Add your actions here -->
-    <action id="NacosRegisterAction" class="com.zhongym.nacos.register.NacosRegisterAction" text="NacosRegister"
+    <action id="NacosRegisterAction" class="com.zhongym.nacos.register.NacosRegisterAction" text="Nacos Register"
             description="nacos register">
       <add-to-group group-id="CodeMenu" anchor="first"/>
       <keyboard-shortcut keymap="$default" first-keystroke="shift alt R"/>
