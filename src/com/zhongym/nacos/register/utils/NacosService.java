@@ -1,9 +1,12 @@
-package com.zhongym.nacos.register;
+package com.zhongym.nacos.register.utils;
 
+import a.e.E;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.alibaba.nacos.client.naming.NacosNamingService;
+import com.zhongym.nacos.register.Config;
+import com.zhongym.nacos.register.constants.ServerStatusEnum;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -36,6 +39,19 @@ public class NacosService {
             nacosServiceMap.put(nacosAddr, nacosService);
         }
         return nacosService;
+    }
+
+    public static ServerStatusEnum getServerStatus(String nacosAddr) {
+        try {
+            NamingService nacosService = getInstance(nacosAddr);
+            if (!"UP".equals(nacosService.getServerStatus())) {
+                return ServerStatusEnum.DOWN;
+            }
+            return ServerStatusEnum.UP;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ServerStatusEnum.DOWN;
+        }
     }
 
     public static void registerInstance(List<String> serviceNameList, Consumer<String> callBack) {
@@ -80,6 +96,14 @@ public class NacosService {
         } catch (NacosException e) {
             e.printStackTrace();
             throw new MyException(e.getErrMsg());
+        }
+    }
+
+    public static void triggerLocalNacos() {
+        if (ServerStatusEnum.UP.equals(getServerStatus(Config.targetServerAddr))) {
+            System.out.println("关闭nacos........");
+        } else {
+            System.out.println("开始nacos........");
         }
     }
 }

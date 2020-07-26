@@ -1,11 +1,10 @@
 package com.zhongym.nacos.register.ui;
 
 import com.alibaba.nacos.api.naming.pojo.Instance;
-import com.intellij.ui.PopupMenuListenerAdapter;
 import com.zhongym.nacos.register.Config;
-import com.zhongym.nacos.register.MyIconLoader;
-import com.zhongym.nacos.register.NacosService;
-import com.zhongym.nacos.register.ThreadHelper;
+import com.zhongym.nacos.register.utils.MyIconLoader;
+import com.zhongym.nacos.register.utils.NacosService;
+import com.zhongym.nacos.register.utils.ThreadHelper;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +22,7 @@ public class TargetServiceItem {
     private JLabel iconField;
     private JPanel textPanel;
 
-    public TargetServiceItem(GenDialog2 dialog, String serviceName, List<Instance> insList) {
+    public TargetServiceItem(MainDialog dialog, String serviceName, List<Instance> insList) {
         String host = insList.stream().findFirst().map(i -> i.getIp() + ":" + i.getPort()).orElse("没有实例");
         boolean healthy = insList.stream().anyMatch(Instance::isHealthy);
         if (healthy) {

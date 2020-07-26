@@ -1,4 +1,4 @@
-package com.zhongym.nacos.register;
+package com.zhongym.nacos.register.utils;
 
 import javax.swing.*;
 import java.util.concurrent.Executors;
@@ -18,6 +18,11 @@ public class ThreadHelper {
     public static void delay(Runnable task, int seconds) {
         executor.schedule(task, seconds, TimeUnit.SECONDS);
     }
+
+    public static void scheduleAtFixedRate(Runnable task, int seconds) {
+        executor.scheduleAtFixedRate(task, seconds, seconds, TimeUnit.SECONDS);
+    }
+
 
     public static void delayOnUIThread(Runnable task, int seconds) {
         executor.schedule(() -> {

@@ -1,7 +1,7 @@
 package com.zhongym.nacos.register.ui;
 
 import com.alibaba.nacos.api.naming.pojo.Instance;
-import com.zhongym.nacos.register.MyIconLoader;
+import com.zhongym.nacos.register.utils.MyIconLoader;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,7 +9,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 
 /**

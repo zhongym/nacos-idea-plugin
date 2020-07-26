@@ -2,8 +2,8 @@ package com.zhongym.nacos.register.ui;
 
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.zhongym.nacos.register.Config;
-import com.zhongym.nacos.register.NacosService;
-import com.zhongym.nacos.register.ThreadHelper;
+import com.zhongym.nacos.register.utils.NacosService;
+import com.zhongym.nacos.register.utils.ThreadHelper;
 
 import javax.swing.*;
 import java.awt.*;

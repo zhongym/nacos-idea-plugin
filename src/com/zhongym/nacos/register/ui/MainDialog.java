@@ -2,8 +2,11 @@ package com.zhongym.nacos.register.ui;
 
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.zhongym.nacos.register.Config;
-import com.zhongym.nacos.register.NacosService;
-import com.zhongym.nacos.register.ThreadHelper;
+import com.zhongym.nacos.register.constants.ServerStatusEnum;
+import com.zhongym.nacos.register.utils.GateWayService;
+import com.zhongym.nacos.register.utils.MyIconLoader;
+import com.zhongym.nacos.register.utils.NacosService;
+import com.zhongym.nacos.register.utils.ThreadHelper;
 import com.zhongym.nacos.register.constants.IpEnum;
 import com.zhongym.nacos.register.constants.StateEnum;
 
@@ -17,28 +20,26 @@ import java.util.stream.Collectors;
 /**
  * @author Yuanmao.Zhong
  */
-public class GenDialog2 extends JDialog {
+public class MainDialog extends JDialog {
     private JPanel contentPane;
 
-
-    private JButton 设置Button;
     /**
-     * 关闭按钮
+     * 公共按钮
      */
-    private JButton buttonCancel;
-    /**
-     * 后台运行按钮
-     */
-    private JButton buttonBg;
+    private JButton settingButton;
+    private JButton closeButton;
+    private JButton bgButton;
 
     /**
      * 基础服务控件
      */
     private JPanel nacosPanel;
-    private JPanel gatewayPanel;
-    private JButton 一键启动Button;
-    private JButton 一键启动Button1;
+    private JLabel nacosStateLabel;
+    private JButton nacosStartButton;
 
+    private JPanel gatewayPanel;
+    private JLabel gatewayStateLabel;
+    private JButton gatewayStartButton;
 
     /**
      * 源服务控件
@@ -49,7 +50,8 @@ public class GenDialog2 extends JDialog {
     private JButton sourceAllButton;
     private JButton sourceRegisterButton;
     private JButton sourceUnAllButton;
-    private JLabel sourceStateLabel;
+    private JLabel sourceLogLabel;
+    private JLabel sourceNacosStateLabel;
     private final List<SourceServiceItem> sourceCheckBoxList = new ArrayList<>();
 
     /**
@@ -58,12 +60,15 @@ public class GenDialog2 extends JDialog {
     private JPanel targetServicePanel;
     private JComboBox targetStateComboBox;
     private JComboBox targetIpComboBox;
-    private final List<JCheckBox> targetCheckBoxList = new ArrayList<>();
 
-    public GenDialog2() {
+
+    public MainDialog() {
         setTitle("Nacos注册");
         setContentPane(contentPane);
         setModal(true);
+
+        //初始化nacos和gateway状态
+        initBaseServerState();
 
         //目标控件初始化
         targetStateComboBox.removeAllItems();
@@ -98,24 +103,31 @@ public class GenDialog2 extends JDialog {
                 checkBox.setSelected(true);
             }
             updateSourceStateForSelect();
-            GenDialog2.this.pack();
+            MainDialog.this.pack();
         });
         sourceUnAllButton.addActionListener(e -> {
             for (SourceServiceItem checkBox : sourceCheckBoxList) {
                 checkBox.setSelected(false);
             }
             updateSourceStateForSelect();
-            GenDialog2.this.pack();
+            MainDialog.this.pack();
         });
 
         sourceRegisterButton.addActionListener(e -> register());
 
 
         //公共按钮
-        buttonBg.addActionListener(e -> {
-            GenDialog2.this.setVisible(false);
+        bgButton.addActionListener(e -> {
+            MainDialog.this.setVisible(false);
         });
-        buttonCancel.addActionListener(e -> onCancel());
+        closeButton.addActionListener(e -> onClose());
+        settingButton.addActionListener(e -> {
+            ConfigDialog configDialog = new ConfigDialog(MainDialog.this);
+            configDialog.setLocation((int) (MainDialog.this.getLocation().getX() + MainDialog.this.getLocation().getX() / 2),
+                    (int) (MainDialog.this.getLocation().getY() + MainDialog.this.getLocation().getY() / 2));
+            configDialog.pack();
+            configDialog.setVisible(true);
+        });
 
 
         //获取所有源服务名称列表
@@ -123,7 +135,58 @@ public class GenDialog2 extends JDialog {
         flushTargetServicePanel();
     }
 
+    private void initBaseServerState() {
+        //初始化nacos状态
+        ThreadHelper.async(this::updateNacosStatus);
+        ThreadHelper.scheduleAtFixedRate(this::updateNacosStatus, 10);
+        nacosStartButton.addActionListener(e -> {
+            ThreadHelper.async(() -> {
+                NacosService.triggerLocalNacos();
+                updateNacosStatus();
+            });
+        });
+
+        //初始化gateway状态
+        ThreadHelper.async(this::updateGatewayStatus);
+        ThreadHelper.scheduleAtFixedRate(this::updateGatewayStatus, 10);
+        gatewayStartButton.addActionListener(e -> {
+            ThreadHelper.async(() -> {
+                GateWayService.trigger();
+                updateGatewayStatus();
+            });
+        });
+    }
+
+    private void updateGatewayStatus() {
+        System.out.println("刷新网关状态.....");
+        ServerStatusEnum statusEnum = GateWayService.getServerStatus();
+        ThreadHelper.onUIThread(() -> {
+            gatewayStateLabel.setIcon(MyIconLoader.getIcon(statusEnum.getIcon()));
+            if (ServerStatusEnum.UP.equals(statusEnum)) {
+                gatewayStartButton.setText("一键关闭");
+            } else {
+                gatewayStartButton.setText("一键启动");
+            }
+        });
+    }
+
+    private void updateNacosStatus() {
+        System.out.println("刷新nacos状态.....");
+        ServerStatusEnum statusEnum = NacosService.getServerStatus(Config.targetServerAddr);
+        ThreadHelper.onUIThread(() -> {
+            nacosStateLabel.setIcon(MyIconLoader.getIcon(statusEnum.getIcon()));
+            if (ServerStatusEnum.UP.equals(statusEnum)) {
+                nacosStartButton.setText("一键关闭");
+            } else {
+                nacosStartButton.setText("一键启动");
+            }
+        });
+    }
+
     private void flushSourceServicePanel() {
+        ServerStatusEnum serverStatus = NacosService.getServerStatus(Config.sourceServerAddr);
+        sourceNacosStateLabel.setIcon(MyIconLoader.getIcon(serverStatus.getIcon()));
+
         boolean filterJob = sourceFilterJobCheckBox.isSelected();
         boolean filterHealthy = sourceFilterHealthyCheckBox.isSelected();
         ThreadHelper.async(() -> {
@@ -132,7 +195,7 @@ public class GenDialog2 extends JDialog {
                 allService = NacosService.getAllService(Config.sourceServerAddr);
             } catch (Exception e) {
                 ThreadHelper.onUIThread(() -> {
-                    sourceStateLabel.setText(e.getMessage());
+                    showSourceNacosLog(e.getMessage());
                 });
                 return;
             }
@@ -164,9 +227,9 @@ public class GenDialog2 extends JDialog {
     private void updateSourceStateForSelect() {
         long selectCount = sourceCheckBoxList.stream().filter(SourceServiceItem::isSelected).count();
         if (selectCount == 0) {
-            showSourceState("等待操作....");
+            showSourceNacosLog("等待操作....");
         } else {
-            showSourceState("已选择" + selectCount + "个服务");
+            showSourceNacosLog("已选择" + selectCount + "个服务");
         }
     }
 
@@ -187,7 +250,6 @@ public class GenDialog2 extends JDialog {
             }
 
             ThreadHelper.onUIThread(() -> {
-                targetCheckBoxList.clear();
                 targetServicePanel.removeAll();
                 targetServicePanel.setLayout(new GridLayout(10, 2));
                 allService.forEach((serviceName, insList) -> {
@@ -203,7 +265,7 @@ public class GenDialog2 extends JDialog {
                     if (IpEnum.REMOTE.equals(ipEnum) && (insList.isEmpty() || insList.stream().anyMatch(i -> IpEnum.isLocalIp(i.getIp())))) {
                         return;
                     }
-                    TargetServiceItem item = new TargetServiceItem(GenDialog2.this, serviceName, insList);
+                    TargetServiceItem item = new TargetServiceItem(MainDialog.this, serviceName, insList);
                     targetServicePanel.add(item.getPanel());
                 });
                 targetServicePanel.setVisible(false);
@@ -216,24 +278,24 @@ public class GenDialog2 extends JDialog {
 
 
     private void register() {
-        showSourceState("开始注册.....");
+        showSourceNacosLog("开始注册.....");
         ThreadHelper.async(() -> {
             List<String> serviceNames = sourceCheckBoxList.stream()
                     .filter(SourceServiceItem::isSelected)
                     .map(SourceServiceItem::getServiceName)
                     .collect(Collectors.toList());
             NacosService.registerInstance(serviceNames, msg -> {
-                GenDialog2.this.sleep(100);
+                MainDialog.this.sleep(100);
                 ThreadHelper.onUIThread(() -> {
-                    showSourceState("注册中... " + msg);
+                    showSourceNacosLog("注册中... " + msg);
                 });
             });
             ThreadHelper.onUIThread(() -> {
-                showSourceState("注册完成，等待界面刷新");
+                showSourceNacosLog("注册完成，等待界面刷新");
             });
             ThreadHelper.delayOnUIThread(() -> {
                 flushTargetServicePanel();
-                showSourceState("界面刷新完成");
+                showSourceNacosLog("界面刷新完成");
             }, 3);
         });
     }
@@ -245,30 +307,12 @@ public class GenDialog2 extends JDialog {
         this.pack();
     }
 
-    private void showSourceState(String tip) {
-        sourceStateLabel.setText(tip);
-        sourceStateLabel.setVisible(false);
-        sourceStateLabel.setVisible(true);
+    private void showSourceNacosLog(String tip) {
+        sourceLogLabel.setText(tip);
+        sourceLogLabel.setVisible(false);
+        sourceLogLabel.setVisible(true);
     }
 
-    private void unRegister() {
-//        showState("开始注销.....");
-//        ThreadHelper.async(() -> {
-//            List<String> serviceNames = sourceCheckBoxList.stream()
-//                    .filter(AbstractButton::isSelected)
-//                    .map(AbstractButton::getText)
-//                    .collect(Collectors.toList());
-//            NacosService.unRegisterInstance(serviceNames, msg -> {
-//                ThreadHelper.onUIThread(() -> {
-//                    showState("注销中..." + msg);
-//                });
-//            });
-//            ThreadHelper.onUIThread(() -> {
-//                flushTargetServicePanel();
-//                showState("注销完成");
-//            });
-//        });
-    }
 
     private void sleep(int n) {
         try {
@@ -278,15 +322,19 @@ public class GenDialog2 extends JDialog {
         }
     }
 
-    private void onCancel() {
+    private void onClose() {
         // add your code here if necessary
         dispose();
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            GenDialog2 dialog = new GenDialog2();
+            MainDialog dialog = new MainDialog();
             dialog.pack();
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            int x = (int) screenSize.getWidth() / 2 - dialog.getWidth();
+            int y = (int) screenSize.getHeight() / 15;
+            dialog.setLocation(x, y);
             dialog.setVisible(true);
             System.exit(0);
         });

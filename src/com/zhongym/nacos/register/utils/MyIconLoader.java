@@ -1,4 +1,4 @@
-package com.zhongym.nacos.register;
+package com.zhongym.nacos.register.utils;
 
 import javax.swing.*;
 import java.util.HashMap;
