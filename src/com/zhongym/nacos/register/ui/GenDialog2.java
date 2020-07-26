@@ -156,20 +156,6 @@ public class GenDialog2 extends JDialog {
                     }
                     String host = insList.stream().findFirst().map(i -> i.getIp() + ":" + i.getPort()).orElse("没有实例");
                     ServiceItem item = new ServiceItem(serviceName, host,true);
-//                    JCheckBox checkBox = new JCheckBox(serviceName);
-//                    checkBox.putClientProperty("insList", insList);
-//                    checkBox.addMouseListener(new MouseAdapter() {
-//                        @Override
-//                        public void mouseEntered(MouseEvent e) {
-//                            JCheckBox box = (JCheckBox) e.getComponent();
-//                            System.out.println("进入:" + box.getClientProperty("insList"));
-//                        }
-//
-//                        @Override
-//                        public void mouseExited(MouseEvent e) {
-//                            System.out.println("退出");
-//                        }
-//                    });
                     sourceServicePanel.add(item.getPanel());
 //                    sourceCheckBoxList.add(checkBox);
                 });
