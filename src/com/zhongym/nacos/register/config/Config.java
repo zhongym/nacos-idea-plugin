@@ -1,5 +1,7 @@
 package com.zhongym.nacos.register.config;
 
+import com.zhongym.nacos.register.constants.IpEnum;
+
 import java.io.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -12,8 +14,23 @@ public class Config implements Serializable {
     private static Config config;
 
     public ConfigItem<Integer> nacosPort = new IntConfigItem("注册中心端口", 8848);
+    public ConfigItem<String> nacosDbUser = new StrConfigItem("注册中心数据库用户名", "");
+    public ConfigItem<String> nacosDbPassword = new StrConfigItem("注册中心数据库密码", "");
+    public ConfigItem<String> nacosDbUrl = new StrConfigItem("注册中心数据库jdbc连接", "");
     public ConfigItem<Integer> gatewayPort = new IntConfigItem("网关端口", 9999);
     public ConfigItem<String> sourceServerAddr = new StrConfigItem("源注册中心地址", "192.168.2.33:8848");
+
+    public static String getLocalNacos() {
+        return IpEnum.getLoopbackAddress() + ":" + Config.getInstance().nacosPort.getValue();
+    }
+
+    public static String getRemoteNacos() {
+        return Config.getInstance().sourceServerAddr.getValue();
+    }
+
+    public static String getGatewayUrl() {
+        return "http://" + IpEnum.getLoopbackAddress() + ":" + Config.getInstance().gatewayPort.getValue();
+    }
 
     private class IntConfigItem extends ConfigItem<Integer> {
 

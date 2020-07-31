@@ -44,4 +44,8 @@ public enum IpEnum {
         }
         return false;
     }
+
+    public static String getLoopbackAddress() {
+        return InetAddress.getLoopbackAddress().getHostAddress();
+    }
 }

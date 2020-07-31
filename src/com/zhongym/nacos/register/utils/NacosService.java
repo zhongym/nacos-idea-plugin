@@ -102,8 +102,14 @@ public class NacosService {
     public static void triggerLocalNacos() {
         if (ServerStatusEnum.UP.equals(getServerStatus(Config.targetServerAddr))) {
             System.out.println("关闭nacos........");
+
         } else {
             System.out.println("开始nacos........");
+            startLocalNacos();
         }
+    }
+
+    private static void startLocalNacos() {
+        //-Dserver.port=8009 -DnacosDbUrl=jdbc:mysql://mall-mysql:3306/mall_config?characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useSSL=false&serverTimezone=UTC -DnacosDbUser=root -DnacosDbPassword=mall123456
     }
 }
