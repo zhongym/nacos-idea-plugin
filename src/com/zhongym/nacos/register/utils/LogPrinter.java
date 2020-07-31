@@ -6,10 +6,10 @@ package com.zhongym.nacos.register.utils;
 public class LogPrinter {
 
     public static void print(String log) {
-
+        System.out.println(log);
     }
 
     public static void print(Exception e) {
-        e.printStackTrace();
+        System.out.println(e.getMessage());
     }
 }

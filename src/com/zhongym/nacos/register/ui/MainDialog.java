@@ -3,10 +3,7 @@ package com.zhongym.nacos.register.ui;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.zhongym.nacos.register.Config;
 import com.zhongym.nacos.register.constants.ServerStatusEnum;
-import com.zhongym.nacos.register.utils.GateWayService;
-import com.zhongym.nacos.register.utils.MyIconLoader;
-import com.zhongym.nacos.register.utils.NacosService;
-import com.zhongym.nacos.register.utils.ThreadHelper;
+import com.zhongym.nacos.register.utils.*;
 import com.zhongym.nacos.register.constants.IpEnum;
 import com.zhongym.nacos.register.constants.StateEnum;
 
@@ -145,11 +142,15 @@ public class MainDialog extends JDialog {
     private void initBaseServerState() {
         //初始化nacos状态
         ThreadHelper.async(this::updateNacosStatus);
-        ThreadHelper.scheduleAtFixedRate(this::updateNacosStatus, 10);
+        ThreadHelper.scheduleAtFixedRate(this::updateNacosStatus, 5);
         nacosStartButton.addActionListener(e -> {
+            nacosStartButton.setEnabled(false);
             ThreadHelper.async(() -> {
                 NacosService.triggerLocalNacos();
                 updateNacosStatus();
+                ThreadHelper.onUIThread(() -> {
+                    nacosStartButton.setEnabled(true);
+                });
             });
         });
 
@@ -165,7 +166,7 @@ public class MainDialog extends JDialog {
     }
 
     private void updateGatewayStatus() {
-        System.out.println("刷新网关状态.....");
+        LogPrinter.print("刷新网关状态.....");
         ServerStatusEnum statusEnum = GateWayService.getServerStatus();
         ThreadHelper.onUIThread(() -> {
             gatewayStateLabel.setIcon(MyIconLoader.getIcon(statusEnum.getIcon()));
@@ -178,16 +179,21 @@ public class MainDialog extends JDialog {
     }
 
     private void updateNacosStatus() {
-        System.out.println("刷新nacos状态.....");
+        LogPrinter.print("刷新nacos状态.....");
         ServerStatusEnum statusEnum = NacosService.getServerStatus(Config.targetServerAddr);
         ThreadHelper.onUIThread(() -> {
             nacosStateLabel.setIcon(MyIconLoader.getIcon(statusEnum.getIcon()));
+            nacosStateLabel.setVisible(false);
+            nacosStateLabel.setVisible(true);
             if (ServerStatusEnum.UP.equals(statusEnum)) {
                 nacosStartButton.setText("一键关闭");
             } else {
                 nacosStartButton.setText("一键启动");
             }
         });
+        if (ServerStatusEnum.DOWN.equals(statusEnum)) {
+            flushTargetServicePanel();
+        }
     }
 
     private void flushSourceServicePanel() {
@@ -325,7 +331,7 @@ public class MainDialog extends JDialog {
         try {
             Thread.sleep(n);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LogPrinter.print(e);
         }
     }
 

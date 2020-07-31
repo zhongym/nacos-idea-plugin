@@ -36,4 +36,8 @@ public class ThreadHelper {
             task.run();
         });
     }
+
+    public static void main(String[] args) {
+        NacosService.stopLocalNacos();
+    }
 }

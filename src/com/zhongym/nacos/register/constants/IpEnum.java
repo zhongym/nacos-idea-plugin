@@ -1,5 +1,7 @@
 package com.zhongym.nacos.register.constants;
 
+import com.zhongym.nacos.register.utils.LogPrinter;
+
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.UnknownHostException;
@@ -40,7 +42,7 @@ public enum IpEnum {
                 return true;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+             LogPrinter.print(e);
         }
         return false;
     }

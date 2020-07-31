@@ -2,6 +2,7 @@ package com.zhongym.nacos.register.ui;
 
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.zhongym.nacos.register.Config;
+import com.zhongym.nacos.register.utils.LogPrinter;
 import com.zhongym.nacos.register.utils.NacosService;
 import com.zhongym.nacos.register.utils.ThreadHelper;
 
@@ -287,7 +288,7 @@ public class GenDialog extends JDialog {
         try {
             Thread.sleep(n);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+             LogPrinter.print(e);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.zhongym.nacos.register.config;
 
 import com.zhongym.nacos.register.constants.IpEnum;
+import com.zhongym.nacos.register.utils.LogPrinter;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -14,9 +15,9 @@ public class Config implements Serializable {
     private static Config config;
 
     public ConfigItem<Integer> nacosPort = new IntConfigItem("注册中心端口", 8848);
-    public ConfigItem<String> nacosDbUser = new StrConfigItem("注册中心数据库用户名", "");
-    public ConfigItem<String> nacosDbPassword = new StrConfigItem("注册中心数据库密码", "");
-    public ConfigItem<String> nacosDbUrl = new StrConfigItem("注册中心数据库jdbc连接", "");
+    public ConfigItem<String> nacosDbUser = new StrConfigItem("注册中心数据库用户名", "root");
+    public ConfigItem<String> nacosDbPassword = new StrConfigItem("注册中心数据库密码", "mall123456");
+    public ConfigItem<String> nacosDbUrl = new StrConfigItem("注册中心数据库jdbc连接", "jdbc:mysql://mall-mysql:3306/mall_config?characterEncoding=utf8");
     public ConfigItem<Integer> gatewayPort = new IntConfigItem("网关端口", 9999);
     public ConfigItem<String> sourceServerAddr = new StrConfigItem("源注册中心地址", "192.168.2.33:8848");
 
@@ -102,7 +103,7 @@ public class Config implements Serializable {
                 try {
                     items.add((ConfigItem<?>) field.get(this));
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                     LogPrinter.print(e);
                 }
             }
         }
@@ -113,7 +114,7 @@ public class Config implements Serializable {
         try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(new File(Config.class.getName())));) {
             outputStream.writeObject(this);
         } catch (Exception e) {
-            e.printStackTrace();
+             LogPrinter.print(e);
         }
     }
 
@@ -122,7 +123,7 @@ public class Config implements Serializable {
             try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(new File(Config.class.getName())));) {
                 config = (Config) inputStream.readObject();
             } catch (Exception e) {
-                e.printStackTrace();
+                 LogPrinter.print(e);
             }
         }
         if (config == null) {
