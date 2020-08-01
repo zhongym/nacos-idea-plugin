@@ -1,6 +1,7 @@
 package com.zhongym.nacos.register.ui;
 
 import com.zhongym.nacos.register.config.Config;
+import com.zhongym.nacos.register.utils.LogPrinter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,16 +35,6 @@ public class ConfigDialog extends JDialog {
             settingItemPanel.add(settingItem.getPanel());
             settingItemList.add(settingItem);
         }
-//        for (Config.ConfigItem<?> configItem : allItem) {
-//            ConfigSettingItem settingItem = new ConfigSettingItem(configItem);
-//            settingItemPanel.add(settingItem.getPanel());
-//            settingItemList.add(settingItem);
-//        }
-//        for (Config.ConfigItem<?> configItem : allItem) {
-//            ConfigSettingItem settingItem = new ConfigSettingItem(configItem);
-//            settingItemPanel.add(settingItem.getPanel());
-//            settingItemList.add(settingItem);
-//        }
 
         //按钮事件
         buttonOK.addActionListener(e -> onOK());
@@ -52,9 +43,9 @@ public class ConfigDialog extends JDialog {
 
     private void onOK() {
         //保存设置
+        LogPrinter.print("保存设置");
         settingItemList.forEach(ConfigSettingItem::setting);
         Config.getInstance().save();
-
         dispose();
     }
 

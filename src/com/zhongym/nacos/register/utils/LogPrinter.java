@@ -1,5 +1,7 @@
 package com.zhongym.nacos.register.utils;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.function.Consumer;
 
@@ -35,37 +37,37 @@ public class LogPrinter {
 
     public static synchronized void print(String log) {
         list.add(" log: " + log);
-        if (consumer != null) {
-            String t = list.toString();
-            ThreadHelper.onUIThread(() -> {
-                consumer.accept(t);
-            });
-        }
+        flushUI();
         System.out.println(log);
     }
 
     public static synchronized void printServerLog(String log) {
-//        list.add(" log: " + log);
-//        if (consumer != null) {
-//            String t = list.toString();
-//            ThreadHelper.onUIThread(() -> {
-//                consumer.accept(t);
-//            });
-//        }
+        list.add(" log: " + log);
+        flushUI();
         System.out.println(log);
     }
 
     public static synchronized void print(Exception e) {
         list.add(" exception: " + e.getMessage());
+        flushUI();
+        e.printStackTrace();
+    }
+
+    private static int lastTime = 0;
+    private static DateTimeFormatter hHmmss = DateTimeFormatter.ofPattern("HHmmss");
+
+    private static void flushUI() {
+        //控制ui刷新频率
+        Integer current = Integer.valueOf(LocalTime.now().format(hHmmss));
+        if (current - lastTime < 1) {
+            return;
+        }
+        lastTime = current;
         if (consumer != null) {
-//            StringWriter out = new StringWriter();
-//            e.printStackTrace(new PrintWriter(out));
-//            consumer.accept(out.toString());
             String t = list.toString();
             ThreadHelper.onUIThread(() -> {
                 consumer.accept(t);
             });
         }
-        e.printStackTrace();
     }
 }

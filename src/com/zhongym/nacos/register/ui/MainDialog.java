@@ -63,7 +63,7 @@ public class MainDialog extends JDialog {
     private JButton freshenTargetButton;
 
     public MainDialog() {
-        setTitle("Nacos注册");
+        setTitle("Mall Tool");
         setContentPane(contentPane);
         setModal(true);
 
