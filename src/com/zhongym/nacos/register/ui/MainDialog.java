@@ -1,11 +1,11 @@
 package com.zhongym.nacos.register.ui;
 
 import com.alibaba.nacos.api.naming.pojo.Instance;
-import com.zhongym.nacos.register.Config;
-import com.zhongym.nacos.register.constants.ServerStatusEnum;
-import com.zhongym.nacos.register.utils.*;
+import com.zhongym.nacos.register.config.Config;
 import com.zhongym.nacos.register.constants.IpEnum;
+import com.zhongym.nacos.register.constants.ServerStatusEnum;
 import com.zhongym.nacos.register.constants.StateEnum;
+import com.zhongym.nacos.register.utils.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,6 +26,8 @@ public class MainDialog extends JDialog {
     private JButton settingButton;
     private JButton closeButton;
     private JButton bgButton;
+    private JTextPane logTextPane;
+    private JScrollPane logScrollPane;
 
     /**
      * 基础服务控件
@@ -49,6 +51,7 @@ public class MainDialog extends JDialog {
     private JButton sourceUnAllButton;
     private JLabel sourceLogLabel;
     private JLabel sourceNacosStateLabel;
+    private JButton freshenSourceButton;
     private final List<SourceServiceItem> sourceCheckBoxList = new ArrayList<>();
 
     /**
@@ -57,7 +60,7 @@ public class MainDialog extends JDialog {
     private JPanel targetServicePanel;
     private JComboBox targetStateComboBox;
     private JComboBox targetIpComboBox;
-
+    private JButton freshenTargetButton;
 
     public MainDialog() {
         setTitle("Nacos注册");
@@ -84,6 +87,11 @@ public class MainDialog extends JDialog {
                     (int) (MainDialog.this.getLocation().getY() + MainDialog.this.getLocation().getY() / 2));
             configDialog.pack();
             configDialog.setVisible(true);
+        });
+
+        LogPrinter.init(s -> {
+            logTextPane.setText(s);
+            logTextPane.setCaretPosition(logTextPane.getStyledDocument().getLength());
         });
 
     }
@@ -113,7 +121,9 @@ public class MainDialog extends JDialog {
             updateSourceStateForSelect();
             MainDialog.this.pack();
         });
-
+        freshenSourceButton.addActionListener(e -> {
+            flushSourceServicePanel();
+        });
         sourceRegisterButton.addActionListener(e -> register());
 
         flushSourceServicePanel();
@@ -135,6 +145,9 @@ public class MainDialog extends JDialog {
         targetIpComboBox.addActionListener(e -> {
             flushTargetServicePanel();
         });
+        freshenTargetButton.addActionListener(e -> {
+            flushTargetServicePanel();
+        });
 
         flushTargetServicePanel();
     }
@@ -142,26 +155,48 @@ public class MainDialog extends JDialog {
     private void initBaseServerState() {
         //初始化nacos状态
         ThreadHelper.async(this::updateNacosStatus);
-        ThreadHelper.scheduleAtFixedRate(this::updateNacosStatus, 5);
+        //定时刷新状态
+        if (Config.getInstance().nacosFlushInterval.getValue() > 0) {
+            ThreadHelper.scheduleAtFixedRate(() -> {
+                try {
+                    updateNacosStatus();
+                } catch (Exception e) {
+                    LogPrinter.print(e);
+                }
+            }, Config.getInstance().nacosFlushInterval.getValue());
+        }
         nacosStartButton.addActionListener(e -> {
             nacosStartButton.setEnabled(false);
-            ThreadHelper.async(() -> {
-                NacosService.triggerLocalNacos();
+            ThreadHelper.async(NacosService::triggerLocalNacos);
+            ThreadHelper.delay(() -> {
                 updateNacosStatus();
-                ThreadHelper.onUIThread(() -> {
-                    nacosStartButton.setEnabled(true);
-                });
-            });
+            }, 5);
+            ThreadHelper.delayOnUIThread(() -> {
+                nacosStartButton.setEnabled(true);
+            }, 15);
         });
 
         //初始化gateway状态
         ThreadHelper.async(this::updateGatewayStatus);
-        ThreadHelper.scheduleAtFixedRate(this::updateGatewayStatus, 10);
+        if (Config.getInstance().gatewayFlushInterval.getValue() > 0) {
+            ThreadHelper.scheduleAtFixedRate(() -> {
+                try {
+                    updateGatewayStatus();
+                } catch (Exception e) {
+                    LogPrinter.print(e);
+                }
+            }, Config.getInstance().gatewayFlushInterval.getValue());
+        }
         gatewayStartButton.addActionListener(e -> {
-            ThreadHelper.async(() -> {
-                GateWayService.trigger();
+            gatewayStartButton.setEnabled(false);
+
+            ThreadHelper.async(GateWayService::trigger);
+            ThreadHelper.delay(() -> {
                 updateGatewayStatus();
-            });
+            }, 5);
+            ThreadHelper.delayOnUIThread(() -> {
+                gatewayStartButton.setEnabled(true);
+            }, 15);
         });
     }
 
@@ -180,7 +215,7 @@ public class MainDialog extends JDialog {
 
     private void updateNacosStatus() {
         LogPrinter.print("刷新nacos状态.....");
-        ServerStatusEnum statusEnum = NacosService.getServerStatus(Config.targetServerAddr);
+        ServerStatusEnum statusEnum = NacosService.getServerStatus(Config.getLocalNacos());
         ThreadHelper.onUIThread(() -> {
             nacosStateLabel.setIcon(MyIconLoader.getIcon(statusEnum.getIcon()));
             nacosStateLabel.setVisible(false);
@@ -191,13 +226,11 @@ public class MainDialog extends JDialog {
                 nacosStartButton.setText("一键启动");
             }
         });
-        if (ServerStatusEnum.DOWN.equals(statusEnum)) {
-            flushTargetServicePanel();
-        }
     }
 
-    private void flushSourceServicePanel() {
-        ServerStatusEnum serverStatus = NacosService.getServerStatus(Config.sourceServerAddr);
+    public void flushSourceServicePanel() {
+        LogPrinter.print("刷新源注册中心服务列表......");
+        ServerStatusEnum serverStatus = NacosService.getServerStatus(Config.getRemoteNacos());
         sourceNacosStateLabel.setIcon(MyIconLoader.getIcon(serverStatus.getIcon()));
 
         boolean filterJob = sourceFilterJobCheckBox.isSelected();
@@ -205,7 +238,7 @@ public class MainDialog extends JDialog {
         ThreadHelper.async(() -> {
             Map<String, List<Instance>> allService;
             try {
-                allService = NacosService.getAllService(Config.sourceServerAddr);
+                allService = NacosService.getAllService(Config.getRemoteNacos());
             } catch (Exception e) {
                 ThreadHelper.onUIThread(() -> {
                     showSourceNacosLog(e.getMessage());
@@ -224,7 +257,7 @@ public class MainDialog extends JDialog {
                     if (filterHealthy && insList.stream().noneMatch(Instance::isHealthy)) {
                         return;
                     }
-                    SourceServiceItem item = new SourceServiceItem(serviceName, insList, (itemObj) -> {
+                    SourceServiceItem item = new SourceServiceItem(MainDialog.this, serviceName, insList, (itemObj) -> {
                         updateSourceStateForSelect();
                     });
                     sourceServicePanel.add(item.getPanel());
@@ -233,6 +266,7 @@ public class MainDialog extends JDialog {
                 updateSourceStateForSelect();
                 //重新调整窗口大小
                 this.pack();
+                LogPrinter.print("刷新源注册中心服务列表完成......");
             });
         });
     }
@@ -247,14 +281,15 @@ public class MainDialog extends JDialog {
     }
 
 
-    private void flushTargetServicePanel() {
+    public void flushTargetServicePanel() {
+        LogPrinter.print("刷新本机注册中心服务列表......");
         StateEnum stateEnum = (StateEnum) targetStateComboBox.getSelectedItem();
         IpEnum ipEnum = (IpEnum) targetIpComboBox.getSelectedItem();
 
         ThreadHelper.async(() -> {
             Map<String, List<Instance>> allService;
             try {
-                allService = NacosService.getAllService(Config.targetServerAddr);
+                allService = NacosService.getAllService(Config.getLocalNacos());
             } catch (Exception e) {
                 ThreadHelper.onUIThread(() -> {
 //                    stateField.setText(e.getMessage());
@@ -285,6 +320,7 @@ public class MainDialog extends JDialog {
                 targetServicePanel.setVisible(true);
                 //重新调整窗口大小
                 this.pack();
+                LogPrinter.print("刷新本机注册中心服务列表完成......");
             });
         });
     }
@@ -292,6 +328,7 @@ public class MainDialog extends JDialog {
 
     private void register() {
         showSourceNacosLog("开始注册.....");
+        LogPrinter.print("开始注册.....");
         ThreadHelper.async(() -> {
             List<String> serviceNames = sourceCheckBoxList.stream()
                     .filter(SourceServiceItem::isSelected)
@@ -301,14 +338,17 @@ public class MainDialog extends JDialog {
                 MainDialog.this.sleep(100);
                 ThreadHelper.onUIThread(() -> {
                     showSourceNacosLog("注册中... " + msg);
+                    LogPrinter.print("注册中... " + msg);
                 });
             });
             ThreadHelper.onUIThread(() -> {
                 showSourceNacosLog("注册完成，等待界面刷新");
+                LogPrinter.print("注册完成，等待界面刷新");
             });
             ThreadHelper.delayOnUIThread(() -> {
                 flushTargetServicePanel();
                 showSourceNacosLog("界面刷新完成");
+                LogPrinter.print("界面刷新完成");
             }, 3);
         });
     }
@@ -337,7 +377,15 @@ public class MainDialog extends JDialog {
 
     private void onClose() {
         // add your code here if necessary
+        ThreadHelper.async(() -> {
+            destroy();
+        });
         dispose();
+    }
+
+    private void destroy() {
+        NacosService.stopLocalNacos();
+        GateWayService.close();
     }
 
     public static void main(String[] args) {

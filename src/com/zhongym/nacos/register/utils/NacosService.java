@@ -4,14 +4,13 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.alibaba.nacos.client.naming.NacosNamingService;
-import com.zhongym.nacos.register.Config;
+import com.zhongym.nacos.register.config.Config;
 import com.zhongym.nacos.register.constants.ServerStatusEnum;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -22,8 +21,7 @@ public class NacosService {
     public static Map<String, NamingService> nacosServiceMap = new HashMap<>();
 
     static {
-        System.setProperty("com.alibaba.nacos.client.naming.ctimeout", "500");
-        System.setProperty("com.alibaba.nacos.client.naming.ctimeout", "500");
+        System.setProperty("com.alibaba.nacos.client.naming.ctimeout", "400");
     }
 
     public static NamingService getInstance(String nacosAddr) {
@@ -60,9 +58,9 @@ public class NacosService {
         try {
             for (String serviceName : serviceNameList) {
                 callBack.accept(serviceName);
-                List<Instance> instanceList = getInstance(Config.sourceServerAddr).getAllInstances(serviceName);
+                List<Instance> instanceList = getInstance(Config.getRemoteNacos()).getAllInstances(serviceName);
                 for (Instance instance : instanceList) {
-                    getInstance(Config.targetServerAddr).registerInstance(serviceName, instance);
+                    getInstance(Config.getLocalNacos()).registerInstance(serviceName, instance);
                 }
             }
         } catch (Exception e) {
@@ -75,9 +73,9 @@ public class NacosService {
         try {
             for (String serviceName : serviceNameList) {
                 callBack.accept(serviceName);
-                List<Instance> instanceList = getInstance(Config.sourceServerAddr).getAllInstances(serviceName);
+                List<Instance> instanceList = getInstance(Config.getRemoteNacos()).getAllInstances(serviceName);
                 for (Instance instance : instanceList) {
-                    getInstance(Config.targetServerAddr).deregisterInstance(serviceName, instance);
+                    getInstance(Config.getLocalNacos()).deregisterInstance(serviceName, instance);
                 }
             }
         } catch (Exception e) {
@@ -96,31 +94,24 @@ public class NacosService {
             }
             return map;
         } catch (NacosException e) {
-             LogPrinter.print(e);
-             return new HashMap<>();
+            LogPrinter.print(e);
+            return new HashMap<>();
         }
     }
 
     public static void triggerLocalNacos() {
-        long s = System.currentTimeMillis();
-        ServerStatusEnum serverStatus = getServerStatus(Config.targetServerAddr);
-        long e = System.currentTimeMillis();
-        LogPrinter.print("获取nacos状态用时："+(e-s));
-        if (ServerStatusEnum.UP.equals(serverStatus)) {
+        if (ServerStatusEnum.UP.equals(getServerStatus(Config.getLocalNacos()))) {
             LogPrinter.print("关闭nacos........");
             stopLocalNacos();
         } else {
             LogPrinter.print("启动nacos........");
-           new Thread(){
-               @Override
-               public void run() {
-                   startLocalNacos();
-               }
-           }.start();
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException ex) {
-            }
+            new Thread() {
+                @Override
+                public void run() {
+                    startLocalNacos();
+                }
+            }.start();
+            LogPrinter.print("开启新线程完成........");
         }
     }
 
@@ -135,13 +126,9 @@ public class NacosService {
                 })
                 .orElseThrow(() -> new RuntimeException("找不到指定文件"));
         try {
-            int i = CommandLineUtils.executeCommandLine(new Commandline(path), log -> {
-                System.out.println(new String(log.getBytes(), StandardCharsets.UTF_8));
-            }, log -> {
-                System.out.println(new String(log.getBytes(), StandardCharsets.UTF_8));
-            }, -1);
+            int i = CommandLineUtils.executeCommandLine(new Commandline(path), LogPrinter::print, LogPrinter::print, -1);
         } catch (CommandLineException e) {
-             LogPrinter.print(e);
+            LogPrinter.print(e);
         }
     }
 
@@ -157,21 +144,19 @@ public class NacosService {
                 .orElseThrow(() -> new RuntimeException("找不到指定文件"));
         StringBuffer commands = new StringBuffer();
         commands.append("java -jar ")
+                .append(" -Xms128m -Xmx128m")
+                .append(" -Dlogging.level.root=debug")
                 .append(" -Dserver.port=").append(com.zhongym.nacos.register.config.Config.getInstance().nacosPort.getValue())
                 .append(" -DnacosDbUrl=").append(com.zhongym.nacos.register.config.Config.getInstance().nacosDbUrl.getValue())
                 .append(" -DnacosDbUser=").append(com.zhongym.nacos.register.config.Config.getInstance().nacosDbUser.getValue())
                 .append(" -DnacosDbPassword=").append(com.zhongym.nacos.register.config.Config.getInstance().nacosDbPassword.getValue())
                 .append(" ").append(path);
         String command = commands.toString();
-        LogPrinter.print("启动命令："+command);
+        LogPrinter.print("启动命令：" + command);
         try {
-            int i = CommandLineUtils.executeCommandLine(new Commandline(command), log -> {
-                System.out.println(log);
-            }, log -> {
-                System.out.println(log);
-            }, -1);
+            int i = CommandLineUtils.executeCommandLine(new Commandline(command), LogPrinter::printServerLog, LogPrinter::printServerLog, -1);
         } catch (CommandLineException e) {
-             LogPrinter.print(e);
+            LogPrinter.print(e);
         }
     }
 

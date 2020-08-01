@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.zhongym.nacos.register.ui.MainDialog">
-  <grid id="cbd77" binding="contentPane" layout-manager="GridLayoutManager" row-count="4" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="cbd77" binding="contentPane" layout-manager="GridLayoutManager" row-count="5" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
-      <xy x="48" y="54" width="637" height="623"/>
+      <xy x="48" y="54" width="1100" height="647"/>
     </constraints>
     <properties>
       <toolTipText value=""/>
     </properties>
     <border type="none"/>
     <children>
-      <grid id="94766" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="94766" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="1" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="4" column="0" row-span="1" col-span="2" vsize-policy="1" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none" title="操作"/>
         <children>
-          <grid id="9538f" layout-manager="GridLayoutManager" row-count="1" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="9538f" layout-manager="GridLayoutManager" row-count="2" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="5" bottom="5" right="5"/>
             <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties/>
             <border type="none"/>
             <children>
               <component id="5723f" class="javax.swing.JButton" binding="closeButton">
                 <constraints>
-                  <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text value="关闭"/>
@@ -36,34 +36,75 @@
               </component>
               <hspacer id="1d880">
                 <constraints>
-                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
               </hspacer>
               <component id="fa055" class="javax.swing.JButton" binding="bgButton">
                 <constraints>
-                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text value="后台运行"/>
                 </properties>
               </component>
-              <component id="b8f38" class="javax.swing.JButton" binding="settingButton">
+              <vspacer id="b4d70">
                 <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+                </constraints>
+              </vspacer>
+            </children>
+          </grid>
+          <grid id="44bd3" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <scrollpane id="fdd3a" binding="logScrollPane">
+                <constraints>
+                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                    <minimum-size width="-1" height="70"/>
+                    <preferred-size width="800" height="70"/>
+                    <maximum-size width="-1" height="70"/>
+                  </grid>
                 </constraints>
                 <properties>
-                  <horizontalAlignment value="0"/>
-                  <text value="设置"/>
+                  <horizontalScrollBarPolicy value="32"/>
+                </properties>
+                <border type="none"/>
+                <children>
+                  <component id="1951d" class="javax.swing.JTextPane" binding="logTextPane">
+                    <constraints/>
+                    <properties>
+                      <text value=""/>
+                    </properties>
+                  </component>
+                </children>
+              </scrollpane>
+              <component id="ac7eb" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <icon value="icon/horn-icon.png"/>
+                  <text value=""/>
                 </properties>
               </component>
             </children>
           </grid>
+          <hspacer id="3ea1d">
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+          </hspacer>
         </children>
       </grid>
       <grid id="866cc" layout-manager="GridLayoutManager" row-count="3" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none" title="源注册中心服务列表"/>
@@ -104,6 +145,18 @@
                 <constraints/>
                 <properties>
                   <text value="过滤非健康"/>
+                </properties>
+              </component>
+              <hspacer id="b354b">
+                <constraints/>
+              </hspacer>
+              <hspacer id="760e7">
+                <constraints/>
+              </hspacer>
+              <component id="37d88" class="javax.swing.JButton" binding="freshenSourceButton">
+                <constraints/>
+                <properties>
+                  <text value="刷新"/>
                 </properties>
               </component>
             </children>
@@ -204,7 +257,7 @@
       <grid id="e96c0" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none" title="基础服务"/>
@@ -289,7 +342,7 @@
       <grid id="a82bf" layout-manager="GridLayoutManager" row-count="2" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none" title="本机注册中心服务列表"/>
@@ -344,6 +397,18 @@
                   </model>
                 </properties>
               </component>
+              <hspacer id="2a8b0">
+                <constraints/>
+              </hspacer>
+              <hspacer id="8ee0d">
+                <constraints/>
+              </hspacer>
+              <component id="3a15d" class="javax.swing.JButton" binding="freshenTargetButton">
+                <constraints/>
+                <properties>
+                  <text value="刷新"/>
+                </properties>
+              </component>
             </children>
           </grid>
           <scrollpane id="7e984">
@@ -380,6 +445,30 @@
               </grid>
             </children>
           </scrollpane>
+        </children>
+      </grid>
+      <grid id="b4b40" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="b8f38" class="javax.swing.JButton" binding="settingButton">
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <horizontalAlignment value="0"/>
+              <text value="设置"/>
+            </properties>
+          </component>
+          <hspacer id="37fbf">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+          </hspacer>
         </children>
       </grid>
     </children>

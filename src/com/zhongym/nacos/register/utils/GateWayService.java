@@ -4,15 +4,19 @@ import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.zhongym.nacos.register.config.Config;
 import com.zhongym.nacos.register.constants.ServerStatusEnum;
+import org.codehaus.plexus.util.cli.CommandLineException;
+import org.codehaus.plexus.util.cli.CommandLineUtils;
+import org.codehaus.plexus.util.cli.Commandline;
 
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
+import java.util.Optional;
 
 /**
  * @author Yuanmao.Zhong
  */
 public class GateWayService {
-
-    private static ServerStatusEnum statusEnum = ServerStatusEnum.UP;
 
     public static ServerStatusEnum getServerStatus() {
         String url = Config.getGatewayUrl() + "/actuator/health";
@@ -32,23 +36,60 @@ public class GateWayService {
         if (ServerStatusEnum.UP.equals(getServerStatus())) {
             close();
         } else {
-            start();
+            new Thread() {
+                @Override
+                public void run() {
+                    GateWayService.start();
+                }
+            }.start();
+            LogPrinter.print("开启新线程完成........");
         }
     }
 
     public static void start() {
-        System.out.println("启动网关服务.....");
-        statusEnum = ServerStatusEnum.UP;
-
+        LogPrinter.print("启动网关服务.....");
+        String path = Optional.ofNullable(NacosService.class.getClassLoader().getResource("mall-gateway.jar"))
+                .map(URL::getPath)
+                .map(s -> {
+                    if (s.startsWith("/")) {
+                        return s.substring(1);
+                    }
+                    return s;
+                })
+                .orElseThrow(() -> new RuntimeException("找不到指定文件"));
+        StringBuffer commands = new StringBuffer();
+        commands.append("java -Dfile.encoding=utf-8 -jar ")
+                .append(" -Xms128m -Xmx128m")
+                .append(" -Dserver.port=").append(Config.getInstance().gatewayPort.getValue())
+                .append(" ").append(path);
+        String command = commands.toString();
+        LogPrinter.print("启动命令：" + command);
+        try {
+            int i = CommandLineUtils.executeCommandLine(new Commandline(command), LogPrinter::printServerLog, LogPrinter::printServerLog, -1);
+        } catch (CommandLineException e) {
+            LogPrinter.print(e);
+        }
     }
 
     public static void close() {
-        System.out.println("关闭网关服务.....");
-        statusEnum = ServerStatusEnum.DOWN;
+        LogPrinter.print("关闭网关服务.....");
+        String path = Optional.ofNullable(NacosService.class.getClassLoader().getResource("stop-gateway.bat"))
+                .map(URL::getPath)
+                .map(s -> {
+                    if (s.startsWith("/")) {
+                        return s.substring(1);
+                    }
+                    return s;
+                })
+                .orElseThrow(() -> new RuntimeException("找不到指定文件"));
+        try {
+            int i = CommandLineUtils.executeCommandLine(new Commandline(path), LogPrinter::print, LogPrinter::print, -1);
+        } catch (CommandLineException e) {
+            LogPrinter.print(e);
+        }
     }
 
     public static void main(String[] args) {
-        ServerStatusEnum serverStatus = GateWayService.getServerStatus();
-        System.out.println(serverStatus);
+        start();
     }
 }

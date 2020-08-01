@@ -1,7 +1,7 @@
 package com.zhongym.nacos.register.ui;
 
 import com.alibaba.nacos.api.naming.pojo.Instance;
-import com.zhongym.nacos.register.Config;
+import com.zhongym.nacos.register.config.Config;
 import com.zhongym.nacos.register.utils.MyIconLoader;
 import com.zhongym.nacos.register.utils.NacosService;
 import com.zhongym.nacos.register.utils.ThreadHelper;
@@ -26,9 +26,9 @@ public class TargetServiceItem {
         String host = insList.stream().findFirst().map(i -> i.getIp() + ":" + i.getPort()).orElse("没有实例");
         boolean healthy = insList.stream().anyMatch(Instance::isHealthy);
         if (healthy) {
-            iconField.setIcon(MyIconLoader.getIcon("send-p-icon1.png"));
+            iconField.setIcon(MyIconLoader.getIcon("send-l-b.png"));
         } else {
-            iconField.setIcon(MyIconLoader.getIcon("tip-icon.png"));
+            iconField.setIcon(MyIconLoader.getIcon("addr-icon.png"));
         }
         nameField.setText(serviceName);
         hostField.setText(host);
@@ -39,7 +39,7 @@ public class TargetServiceItem {
             public void mouseClicked(MouseEvent e) {
                 //右键
                 if ((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0) {
-                    JMenuItem item = new JMenuItem(MyIconLoader.getIcon("del-login.png"));
+                    JMenuItem item = new JMenuItem(MyIconLoader.getIcon("list-sel01.jpg"));
                     item.setText("移除");
                     item.addActionListener(new ActionListener() {
                         @Override
@@ -47,7 +47,7 @@ public class TargetServiceItem {
                             ThreadHelper.async(() -> {
                                 try {
                                     for (Instance instance : insList) {
-                                        NacosService.getInstance(Config.targetServerAddr).deregisterInstance(serviceName, instance);
+                                        NacosService.getInstance(Config.getLocalNacos()).deregisterInstance(serviceName, instance);
                                     }
                                     ThreadHelper.onUIThread(() -> {
                                         dialog.removeTargetServiceItem(TargetServiceItem.this);

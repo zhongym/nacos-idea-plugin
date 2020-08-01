@@ -13,7 +13,7 @@
       <component id="972c8" class="javax.swing.JLabel" binding="iconField">
         <constraints/>
         <properties>
-          <icon value="icon/send-p-icon1.png"/>
+          <icon value="icon/send-l-b.png"/>
           <text value=""/>
         </properties>
       </component>

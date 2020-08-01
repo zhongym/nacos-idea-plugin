@@ -1,12 +1,14 @@
 package com.zhongym.nacos.register.ui;
 
 import com.alibaba.nacos.api.naming.pojo.Instance;
+import com.zhongym.nacos.register.config.Config;
 import com.zhongym.nacos.register.utils.MyIconLoader;
+import com.zhongym.nacos.register.utils.NacosService;
+import com.zhongym.nacos.register.utils.ThreadHelper;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -24,13 +26,13 @@ public class SourceServiceItem {
 
     private boolean isSelected;
 
-    public SourceServiceItem(String serviceName, List<Instance> insList, Consumer<SourceServiceItem> clickCallBack) {
+    public SourceServiceItem(MainDialog dialog, String serviceName, List<Instance> insList, Consumer<SourceServiceItem> clickCallBack) {
         String host = insList.stream().findFirst().map(i -> i.getIp() + ":" + i.getPort()).orElse("没有实例");
         boolean healthy = insList.stream().anyMatch(Instance::isHealthy);
         if (healthy) {
-            iconField.setIcon(MyIconLoader.getIcon("send-p-icon1.png"));
+            iconField.setIcon(MyIconLoader.getIcon("send-l-b.png"));
         } else {
-            iconField.setIcon(MyIconLoader.getIcon("tip-icon.png"));
+            iconField.setIcon(MyIconLoader.getIcon("addr-icon.png"));
         }
         updateIcon();
         nameField.setText(serviceName);
@@ -40,15 +42,46 @@ public class SourceServiceItem {
         textPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                setSelected(!isSelected());
-                clickCallBack.accept(SourceServiceItem.this);
+                //左键
+                if ((e.getModifiers() & InputEvent.BUTTON3_MASK) == 0) {
+                    setSelected(!isSelected());
+                    clickCallBack.accept(SourceServiceItem.this);
+                }
+                //右键
+                if ((e.getModifiers() & InputEvent.BUTTON1_MASK) == 0) {
+                    JMenuItem item = new JMenuItem(MyIconLoader.getIcon("sc.png"));
+                    item.setText("注册到本机");
+                    item.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            ThreadHelper.async(() -> {
+                                try {
+                                    for (Instance instance : insList) {
+                                        NacosService.getInstance(Config.getLocalNacos()).registerInstance(serviceName, instance);
+                                    }
+                                    ThreadHelper.delayOnUIThread(() -> {
+                                        dialog.flushTargetServicePanel();
+                                    }, 3);
+                                } catch (Exception ex) {
+                                    ThreadHelper.onUIThread(() -> {
+                                        JOptionPane.showMessageDialog(null, "操作失败", ex.getMessage(), JOptionPane.ERROR_MESSAGE);
+                                    });
+                                }
+                            });
+                        }
+                    });
+
+                    JPopupMenu menu = new JPopupMenu("操作");
+                    menu.add(item);
+                    menu.show(textPanel, 0, 0);
+                }
             }
         });
     }
 
     private void updateIcon() {
         if (isSelected) {
-            selectStateField.setIcon(MyIconLoader.getIcon("layer-icon03.png"));
+            selectStateField.setIcon(MyIconLoader.getIcon("ask-check2.png"));
         } else {
             selectStateField.setIcon(null);
         }

@@ -9,22 +9,27 @@ import java.util.concurrent.TimeUnit;
  * @author Yuanmao.Zhong
  */
 public class ThreadHelper {
-    private static final ScheduledExecutorService executor = Executors.newScheduledThreadPool(5, (r) -> new Thread(r, "async-task-thread"));
+    private static int i = 1;
+    private static final ScheduledExecutorService executor = Executors.newScheduledThreadPool(5, (r) -> new Thread(r, "async-thread-" + i++));
 
     public static void async(Runnable task) {
+        LogPrinter.print("线程池状态 " + executor.toString());
         executor.submit(task);
     }
 
     public static void delay(Runnable task, int seconds) {
+        LogPrinter.print("线程池状态 " + executor.toString());
         executor.schedule(task, seconds, TimeUnit.SECONDS);
     }
 
     public static void scheduleAtFixedRate(Runnable task, int seconds) {
+        LogPrinter.print("线程池状态 " + executor.toString());
         executor.scheduleAtFixedRate(task, seconds, seconds, TimeUnit.SECONDS);
     }
 
 
     public static void delayOnUIThread(Runnable task, int seconds) {
+        LogPrinter.print("线程池状态 " + executor.toString());
         executor.schedule(() -> {
             onUIThread(task);
         }, seconds, TimeUnit.SECONDS);
