@@ -5,7 +5,7 @@ import com.zhongym.nacos.tool.constants.ServerStatusEnum;
 import com.zhongym.nacos.tool.utils.MyIconLoader;
 import com.zhongym.nacos.tool.config.Config;
 import com.zhongym.nacos.tool.utils.LogPrinter;
-import com.zhongym.nacos.tool.utils.NacosService;
+import com.zhongym.nacos.tool.server.NacosService;
 import com.zhongym.nacos.tool.utils.ThreadHelper;
 
 import javax.swing.*;

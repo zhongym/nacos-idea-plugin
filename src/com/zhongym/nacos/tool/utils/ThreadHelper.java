@@ -1,5 +1,7 @@
 package com.zhongym.nacos.tool.utils;
 
+import com.zhongym.nacos.tool.server.NacosService;
+
 import javax.swing.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -17,23 +19,23 @@ public class ThreadHelper {
     }
 
     public static void async(Runnable task) {
-        LogPrinter.print("线程池状态 " + executor.toString().replace("java.util.concurrent.ScheduledThreadPool",""));
+        LogPrinter.print("线程池状态 " + executor.toString().replace("java.util.concurrent.ScheduledThreadPool", ""));
         executor.submit(task);
     }
 
     public static void delay(Runnable task, int seconds) {
-        LogPrinter.print("线程池状态 " + executor.toString().replace("java.util.concurrent.ScheduledThreadPool",""));
+        LogPrinter.print("线程池状态 " + executor.toString().replace("java.util.concurrent.ScheduledThreadPool", ""));
         executor.schedule(task, seconds, TimeUnit.SECONDS);
     }
 
     public static void scheduleAtFixedRate(Runnable task, int seconds) {
-        LogPrinter.print("线程池状态 " + executor.toString().replace("java.util.concurrent.ScheduledThreadPool",""));
+        LogPrinter.print("线程池状态 " + executor.toString().replace("java.util.concurrent.ScheduledThreadPool", ""));
         executor.scheduleAtFixedRate(task, seconds, seconds, TimeUnit.SECONDS);
     }
 
 
     public static void delayOnUIThread(Runnable task, int seconds) {
-        LogPrinter.print("线程池状态 " + executor.toString().replace("java.util.concurrent.ScheduledThreadPool",""));
+        LogPrinter.print("线程池状态 " + executor.toString().replace("java.util.concurrent.ScheduledThreadPool", ""));
         executor.schedule(() -> {
             onUIThread(task);
         }, seconds, TimeUnit.SECONDS);
@@ -48,10 +50,8 @@ public class ThreadHelper {
 
 
     public static void destroy() {
+        LogPrinter.print("销毁线程.....");
         executor.shutdownNow();
     }
 
-    public static void main(String[] args) {
-        NacosService.stopLocalNacos();
-    }
 }

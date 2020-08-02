@@ -10,7 +10,7 @@ import java.util.function.Consumer;
  */
 public class LogPrinter {
     private static Consumer<String> consumer;
-    private static LinkedList<String> list = new LinkedList<String>() {
+    private static final LinkedList<String> LIST = new LinkedList<String>() {
         private int num = 1;
 
         @Override
@@ -32,44 +32,45 @@ public class LogPrinter {
     };
 
     public static void init(Consumer<String> consumer) {
-        list.clear();
+        LIST.clear();
         LogPrinter.consumer = consumer;
     }
 
     public static synchronized void print(String log) {
-        list.add(" log: " + log);
+        LIST.add(" log: " + log);
         flushUI();
         System.out.println(log);
     }
 
     public static synchronized void printServerLog(String log) {
-        list.add(" log: " + log);
+        LIST.add(" log: " + log);
         flushUI();
         System.out.println(log);
     }
 
     public static synchronized void print(Exception e) {
-        list.add(" exception: " + e.getMessage());
+        LIST.add(" exception: " + e.getMessage());
         flushUI();
         e.printStackTrace();
     }
 
     public static void destroy() {
-        list.clear();
+        LogPrinter.print("销毁日志.....");
+        LIST.clear();
     }
 
     private static int lastTime = 0;
-    private static DateTimeFormatter hHmmss = DateTimeFormatter.ofPattern("HHmmss");
+    private static final DateTimeFormatter HHMMSS = DateTimeFormatter.ofPattern("HHmmss");
 
     private static void flushUI() {
         //控制ui刷新频率
-        Integer current = Integer.valueOf(LocalTime.now().format(hHmmss));
+        int current = Integer.parseInt(LocalTime.now().format(HHMMSS));
         if (current - lastTime < 1) {
             return;
         }
         lastTime = current;
         if (consumer != null) {
-            String t = list.toString();
+            String t = LIST.toString();
             ThreadHelper.onUIThread(() -> {
                 consumer.accept(t);
             });

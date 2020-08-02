@@ -1,11 +1,11 @@
 <idea-plugin>
     <id>NacosTool</id>
     <name>Nacos Tool</name>
-    <version>1.0</version>
+    <version>1.1</version>
     <vendor email="zym@qq.com" url="http://www.zym.com">mall</vendor>
 
     <description><![CDATA[
-      mall nacos、gateway plugin support
+      mall nacos、gateway、auth plugin support
     ]]></description>
 
     <change-notes><![CDATA[
@@ -13,6 +13,7 @@
     <p>  2、add start/stop gateway </p>
     <p>  3、add local nacos server manage </p>
     <p>  4、add remote nacos server list </p>
+    <p>  5、add start/stop auth </p>
     ]]>
     </change-notes>
 

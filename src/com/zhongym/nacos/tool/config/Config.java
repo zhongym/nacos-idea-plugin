@@ -13,16 +13,14 @@ import java.util.List;
  * @author Yuanmao.Zhong
  */
 public class Config implements Serializable {
-    private static Config config;
-
     public ConfigItem<Integer> nacosPort = new IntConfigItem("本机注册中心端口", 8848);
     public ConfigItem<String> nacosDbUser = new StrConfigItem("本机注册中心数据库用户名", "root");
     public ConfigItem<String> nacosDbPassword = new StrConfigItem("本机注册中心数据库密码", "mall123456");
     public ConfigItem<String> nacosDbUrl = new StrConfigItem("本机注册中心数据库jdbc连接", "jdbc:mysql://mall-mysql:3306/mall_config?characterEncoding=utf8");
     public ConfigItem<String> sourceServerAddr = new StrConfigItem("源注册中心地址", "192.168.2.33:8848");
     public ConfigItem<Integer> gatewayPort = new IntConfigItem("本机网关端口", 9999);
-    public ConfigItem<Integer> gatewayFlushInterval = new IntConfigItem("本机网关状态刷新间隔秒", 5);
-    public ConfigItem<Integer> nacosFlushInterval = new IntConfigItem("本机注册中心刷新间隔秒", 5);
+    public ConfigItem<Integer> authPort = new IntConfigItem("本机auth端口", 3000);
+    public ConfigItem<Integer> serverFlushInterval = new IntConfigItem("服务刷新间隔秒", 5);
 
     public static String getLocalNacos() {
         return IpEnum.getLoopbackAddress() + ":" + Config.getInstance().nacosPort.getValue();
@@ -34,6 +32,10 @@ public class Config implements Serializable {
 
     public static String getGatewayUrl() {
         return "http://" + IpEnum.getLoopbackAddress() + ":" + Config.getInstance().gatewayPort.getValue();
+    }
+
+    public static String getAuthUrl() {
+        return "http://" + IpEnum.getLoopbackAddress() + ":" + Config.getInstance().authPort.getValue();
     }
 
     private class IntConfigItem extends ConfigItem<Integer> {
@@ -125,6 +127,8 @@ public class Config implements Serializable {
         }
     }
 
+    private static Config config;
+
     public static Config getInstance() {
         if (config == null) {
             String configDir = FileUtils.getConfigDir();
@@ -141,16 +145,4 @@ public class Config implements Serializable {
         return config;
     }
 
-    public static void main(String[] args) throws IOException {
-        Config instance = Config.getInstance();
-        System.out.println(instance.nacosPort.value);
-        instance.nacosPort.setting("8848");
-        instance.save();
-
-        ConfigItem nacosPort = instance.nacosPort;
-//        nacosPort.setting("1");
-        System.out.println(nacosPort.getValue());
-
-
-    }
 }

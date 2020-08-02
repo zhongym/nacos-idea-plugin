@@ -9,7 +9,7 @@ import java.util.Objects;
  * @author Yuanmao.Zhong
  */
 public class MyIconLoader {
-    private static Map<String, ImageIcon> iconMap = new HashMap<>();
+    private static final Map<String, ImageIcon> iconMap = new HashMap<>();
 
     public static ImageIcon getIcon(String iconName) {
         ImageIcon imageIcon = iconMap.get(iconName);

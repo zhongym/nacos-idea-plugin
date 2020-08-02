@@ -49,13 +49,7 @@ public class ConfigDialog extends JDialog {
     }
 
     private void onCancel() {
-        // add your code here if necessary
         dispose();
     }
 
-    public static void main(String[] args) {
-        ConfigDialog configDialog = new ConfigDialog(null);
-        configDialog.pack();
-        configDialog.setVisible(true);
-    }
 }

@@ -6,6 +6,10 @@ import com.zhongym.nacos.tool.config.Config;
 import com.zhongym.nacos.tool.constants.IpEnum;
 import com.zhongym.nacos.tool.constants.ServerStatusEnum;
 import com.zhongym.nacos.tool.constants.StateEnum;
+import com.zhongym.nacos.tool.server.AuthServer;
+import com.zhongym.nacos.tool.server.GateWayServer;
+import com.zhongym.nacos.tool.server.NacosServer;
+import com.zhongym.nacos.tool.server.NacosService;
 import com.zhongym.nacos.tool.utils.*;
 
 import javax.swing.*;
@@ -43,13 +47,7 @@ public class MainDialog extends JDialog {
     /**
      * 基础服务控件
      */
-    private JPanel nacosPanel;
-    private JLabel nacosStateLabel;
-    private JButton nacosStartButton;
-
-    private JPanel gatewayPanel;
-    private JLabel gatewayStateLabel;
-    private JButton gatewayStartButton;
+    private JPanel baseServerPanel;
 
     /**
      * 源服务控件
@@ -90,7 +88,7 @@ public class MainDialog extends JDialog {
         });
 
         //初始化nacos和gateway状态
-        initBaseServerState();
+        initBaseServerStateNew();
 
         //目标控件初始化
         initTargetNacos();
@@ -189,81 +187,13 @@ public class MainDialog extends JDialog {
         flushTargetServicePanel();
     }
 
-    private void initBaseServerState() {
-        //初始化nacos状态
-        ThreadHelper.async(this::updateNacosStatus);
-        //定时刷新状态
-        if (Config.getInstance().nacosFlushInterval.getValue() > 0) {
-            ThreadHelper.scheduleAtFixedRate(() -> {
-                try {
-                    updateNacosStatus();
-                } catch (Exception e) {
-                    LogPrinter.print(e);
-                }
-            }, Config.getInstance().nacosFlushInterval.getValue());
-        }
-        nacosStartButton.addActionListener(e -> {
-            nacosStartButton.setEnabled(false);
-            ThreadHelper.async(NacosService::triggerLocalNacos);
-            ThreadHelper.delay(() -> {
-                updateNacosStatus();
-            }, 5);
-            ThreadHelper.delayOnUIThread(() -> {
-                nacosStartButton.setEnabled(true);
-            }, 15);
-        });
-
-        //初始化gateway状态
-        ThreadHelper.async(this::updateGatewayStatus);
-        if (Config.getInstance().gatewayFlushInterval.getValue() > 0) {
-            ThreadHelper.scheduleAtFixedRate(() -> {
-                try {
-                    updateGatewayStatus();
-                } catch (Exception e) {
-                    LogPrinter.print(e);
-                }
-            }, Config.getInstance().gatewayFlushInterval.getValue());
-        }
-        gatewayStartButton.addActionListener(e -> {
-            gatewayStartButton.setEnabled(false);
-
-            ThreadHelper.async(GateWayService::trigger);
-            ThreadHelper.delay(() -> {
-                updateGatewayStatus();
-            }, 5);
-            ThreadHelper.delayOnUIThread(() -> {
-                gatewayStartButton.setEnabled(true);
-            }, 15);
-        });
+    private void initBaseServerStateNew() {
+        baseServerPanel.setLayout(new GridLayout(1, 3));
+        baseServerPanel.add(new ServerItem(NacosServer.getServer()).getContainerPanel());
+        baseServerPanel.add(new ServerItem(GateWayServer.getServer()).getContainerPanel());
+        baseServerPanel.add(new ServerItem(AuthServer.getServer()).getContainerPanel());
     }
 
-    private void updateGatewayStatus() {
-        LogPrinter.print("刷新网关状态.....");
-        ServerStatusEnum statusEnum = GateWayService.getServerStatus();
-        ThreadHelper.onUIThread(() -> {
-            gatewayStateLabel.setIcon(MyIconLoader.getIcon(statusEnum.getIcon()));
-            if (ServerStatusEnum.UP.equals(statusEnum)) {
-                gatewayStartButton.setText("一键关闭");
-            } else {
-                gatewayStartButton.setText("一键启动");
-            }
-        });
-    }
-
-    private void updateNacosStatus() {
-        LogPrinter.print("刷新nacos状态.....");
-        ServerStatusEnum statusEnum = NacosService.getServerStatus(Config.getLocalNacos());
-        ThreadHelper.onUIThread(() -> {
-            nacosStateLabel.setIcon(MyIconLoader.getIcon(statusEnum.getIcon()));
-            nacosStateLabel.setVisible(false);
-            nacosStateLabel.setVisible(true);
-            if (ServerStatusEnum.UP.equals(statusEnum)) {
-                nacosStartButton.setText("一键关闭");
-            } else {
-                nacosStartButton.setText("一键启动");
-            }
-        });
-    }
 
     public void flushSourceServicePanel() {
         LogPrinter.print("刷新源注册中心服务列表......");
@@ -407,8 +337,8 @@ public class MainDialog extends JDialog {
         }
     }
 
+    @SuppressWarnings("all")
     private void onClose() {
-        // add your code here if necessary
         ThreadHelper.async(() -> {
             destroy();
         });
@@ -425,36 +355,16 @@ public class MainDialog extends JDialog {
     }
 
     private void destroy() {
-        LogPrinter.print("开始销毁资源,5秒钟后关闭窗口");
-        LogPrinter.print("关闭注册中心.....");
-        NacosService.stopLocalNacos();
-        LogPrinter.print("关闭网关.....");
-        GateWayService.close();
-        LogPrinter.print("销毁注册中心.....");
-        NacosService.destroy();
-        LogPrinter.print("销毁线程.....");
+        LogPrinter.print("开始销毁资源,n秒钟后关闭窗口");
+        NacosServer.getServer().destroy();
+        GateWayServer.getServer().destroy();
+        AuthServer.getServer().destroy();
         ThreadHelper.destroy();
-        LogPrinter.print("销毁日志.....");
         LogPrinter.destroy();
-
         MainDialog.dialog = null;
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            MainDialog dialog = new MainDialog();
-            dialog.pack();
-            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            int x = (int) screenSize.getWidth() / 2 - dialog.getWidth();
-            int y = (int) screenSize.getHeight() / 15;
-            dialog.setLocation(x, y);
-            dialog.setVisible(true);
-            System.exit(0);
-        });
-    }
-
     private void createUIComponents() {
-        // TODO: place custom component creation code here
         logTextPane = new JTextPane() {
             @Override
             public boolean getScrollableTracksViewportWidth() {
@@ -471,5 +381,18 @@ public class MainDialog extends JDialog {
             }
 
         };
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            MainDialog dialog = new MainDialog();
+            dialog.pack();
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            int x = (int) screenSize.getWidth() / 4;
+            int y = (int) screenSize.getHeight() / 15;
+            dialog.setLocation(x, y);
+            dialog.setVisible(true);
+            System.exit(0);
+        });
     }
 }
