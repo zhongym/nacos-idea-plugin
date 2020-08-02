@@ -11,16 +11,13 @@ import java.awt.*;
  */
 public class NacosRegisterAction extends AnAction {
 
-    private static MainDialog dialog;
 
     @Override
     public void actionPerformed(AnActionEvent e) {
-        if (dialog == null) {
-            dialog = new MainDialog();
-        }
+        MainDialog dialog = MainDialog.getInstance();
         dialog.pack();
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (int) screenSize.getWidth() / 2 - dialog.getWidth();
+        int x = (int) screenSize.getWidth() - dialog.getWidth();
         int y = (int) screenSize.getHeight() / 15;
         dialog.setLocation(x, y);
         dialog.setVisible(true);

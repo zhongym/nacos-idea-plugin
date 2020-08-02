@@ -10,26 +10,30 @@ import java.util.concurrent.TimeUnit;
  */
 public class ThreadHelper {
     private static int i = 1;
-    private static final ScheduledExecutorService executor = Executors.newScheduledThreadPool(5, (r) -> new Thread(r, "async-thread-" + i++));
+    private static ScheduledExecutorService executor;
+
+    public static void init() {
+        executor = Executors.newScheduledThreadPool(5, (r) -> new Thread(r, "async-thread-" + i++));
+    }
 
     public static void async(Runnable task) {
-        LogPrinter.print("线程池状态 " + executor.toString());
+        LogPrinter.print("线程池状态 " + executor.toString().replace("java.util.concurrent.ScheduledThreadPool",""));
         executor.submit(task);
     }
 
     public static void delay(Runnable task, int seconds) {
-        LogPrinter.print("线程池状态 " + executor.toString());
+        LogPrinter.print("线程池状态 " + executor.toString().replace("java.util.concurrent.ScheduledThreadPool",""));
         executor.schedule(task, seconds, TimeUnit.SECONDS);
     }
 
     public static void scheduleAtFixedRate(Runnable task, int seconds) {
-        LogPrinter.print("线程池状态 " + executor.toString());
+        LogPrinter.print("线程池状态 " + executor.toString().replace("java.util.concurrent.ScheduledThreadPool",""));
         executor.scheduleAtFixedRate(task, seconds, seconds, TimeUnit.SECONDS);
     }
 
 
     public static void delayOnUIThread(Runnable task, int seconds) {
-        LogPrinter.print("线程池状态 " + executor.toString());
+        LogPrinter.print("线程池状态 " + executor.toString().replace("java.util.concurrent.ScheduledThreadPool",""));
         executor.schedule(() -> {
             onUIThread(task);
         }, seconds, TimeUnit.SECONDS);
@@ -40,6 +44,11 @@ public class ThreadHelper {
         SwingUtilities.invokeLater(() -> {
             task.run();
         });
+    }
+
+
+    public static void destroy() {
+        executor.shutdownNow();
     }
 
     public static void main(String[] args) {

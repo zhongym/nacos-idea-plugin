@@ -32,6 +32,7 @@ public class LogPrinter {
     };
 
     public static void init(Consumer<String> consumer) {
+        list.clear();
         LogPrinter.consumer = consumer;
     }
 
@@ -51,6 +52,10 @@ public class LogPrinter {
         list.add(" exception: " + e.getMessage());
         flushUI();
         e.printStackTrace();
+    }
+
+    public static void destroy() {
+        list.clear();
     }
 
     private static int lastTime = 0;

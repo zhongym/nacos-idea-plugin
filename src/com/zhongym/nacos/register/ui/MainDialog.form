@@ -3,7 +3,7 @@
   <grid id="cbd77" binding="contentPane" layout-manager="GridLayoutManager" row-count="5" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
-      <xy x="48" y="54" width="1100" height="647"/>
+      <xy x="48" y="54" width="1123" height="670"/>
     </constraints>
     <properties>
       <toolTipText value=""/>
@@ -26,32 +26,32 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="5723f" class="javax.swing.JButton" binding="closeButton">
-                <constraints>
-                  <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="关闭"/>
-                </properties>
-              </component>
               <hspacer id="1d880">
                 <constraints>
                   <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
               </hspacer>
-              <component id="fa055" class="javax.swing.JButton" binding="bgButton">
-                <constraints>
-                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="后台运行"/>
-                </properties>
-              </component>
               <vspacer id="b4d70">
                 <constraints>
                   <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
                 </constraints>
               </vspacer>
+              <component id="5723f" class="javax.swing.JButton" binding="closeButton">
+                <constraints>
+                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="关闭程序"/>
+                </properties>
+              </component>
+              <component id="fa055" class="javax.swing.JButton" binding="bgButton">
+                <constraints>
+                  <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="后台运行"/>
+                </properties>
+              </component>
             </children>
           </grid>
           <grid id="44bd3" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -65,17 +65,17 @@
               <scrollpane id="fdd3a" binding="logScrollPane">
                 <constraints>
                   <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                    <minimum-size width="-1" height="70"/>
+                    <minimum-size width="800" height="70"/>
                     <preferred-size width="800" height="70"/>
-                    <maximum-size width="-1" height="70"/>
+                    <maximum-size width="800" height="70"/>
                   </grid>
                 </constraints>
                 <properties>
-                  <horizontalScrollBarPolicy value="32"/>
+                  <horizontalScrollBarPolicy value="30"/>
                 </properties>
                 <border type="none"/>
                 <children>
-                  <component id="1951d" class="javax.swing.JTextPane" binding="logTextPane">
+                  <component id="1951d" class="javax.swing.JTextPane" binding="logTextPane" custom-create="true">
                     <constraints/>
                     <properties>
                       <text value=""/>
@@ -150,18 +150,42 @@
               <hspacer id="b354b">
                 <constraints/>
               </hspacer>
+              <component id="828c3" class="javax.swing.JLabel">
+                <constraints/>
+                <properties>
+                  <text value="服务名"/>
+                </properties>
+              </component>
+              <grid id="87d4a" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints/>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="f2b94" class="javax.swing.JTextField" binding="sourceServerNameField">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                        <minimum-size width="110" height="28"/>
+                        <preferred-size width="110" height="-1"/>
+                        <maximum-size width="110" height="-1"/>
+                      </grid>
+                    </constraints>
+                    <properties/>
+                  </component>
+                </children>
+              </grid>
               <hspacer id="760e7">
                 <constraints/>
               </hspacer>
               <component id="37d88" class="javax.swing.JButton" binding="freshenSourceButton">
                 <constraints/>
                 <properties>
-                  <text value="刷新"/>
+                  <text value="搜索 "/>
                 </properties>
               </component>
             </children>
           </grid>
-          <scrollpane id="fd763">
+          <scrollpane id="fd763" binding="sourceScrollPane">
             <constraints>
               <grid row="1" column="0" row-span="1" col-span="4" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
                 <minimum-size width="-1" height="50"/>
@@ -347,71 +371,7 @@
         <properties/>
         <border type="none" title="本机注册中心服务列表"/>
         <children>
-          <grid id="a5772" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="0">
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties/>
-            <border type="none">
-              <title-color color="-4473925"/>
-            </border>
-            <children>
-              <component id="b3852" class="javax.swing.JLabel">
-                <constraints/>
-                <properties>
-                  <text value="状态"/>
-                </properties>
-              </component>
-              <component id="268fe" class="javax.swing.JComboBox" binding="targetStateComboBox">
-                <constraints/>
-                <properties>
-                  <model>
-                    <item value="所有"/>
-                    <item value="健康"/>
-                    <item value="死亡"/>
-                  </model>
-                </properties>
-              </component>
-              <hspacer id="1ae78">
-                <constraints/>
-              </hspacer>
-              <hspacer id="628df">
-                <constraints/>
-              </hspacer>
-              <hspacer id="12912">
-                <constraints/>
-              </hspacer>
-              <component id="70397" class="javax.swing.JLabel">
-                <constraints/>
-                <properties>
-                  <text value="ip"/>
-                </properties>
-              </component>
-              <component id="54ae2" class="javax.swing.JComboBox" binding="targetIpComboBox">
-                <constraints/>
-                <properties>
-                  <model>
-                    <item value="所有"/>
-                    <item value="本机"/>
-                    <item value="远程"/>
-                  </model>
-                </properties>
-              </component>
-              <hspacer id="2a8b0">
-                <constraints/>
-              </hspacer>
-              <hspacer id="8ee0d">
-                <constraints/>
-              </hspacer>
-              <component id="3a15d" class="javax.swing.JButton" binding="freshenTargetButton">
-                <constraints/>
-                <properties>
-                  <text value="刷新"/>
-                </properties>
-              </component>
-            </children>
-          </grid>
-          <scrollpane id="7e984">
+          <scrollpane id="7e984" binding="targetScollPane">
             <constraints>
               <grid row="1" column="0" row-span="1" col-span="3" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
                 <minimum-size width="-1" height="50"/>
@@ -445,6 +405,130 @@
               </grid>
             </children>
           </scrollpane>
+          <grid id="f9957" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <grid id="a5772" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="0">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+                <border type="none">
+                  <title-color color="-4473925"/>
+                </border>
+                <children>
+                  <component id="b3852" class="javax.swing.JLabel">
+                    <constraints/>
+                    <properties>
+                      <text value="状态"/>
+                    </properties>
+                  </component>
+                  <component id="268fe" class="javax.swing.JComboBox" binding="targetStateComboBox">
+                    <constraints/>
+                    <properties>
+                      <model>
+                        <item value="所有"/>
+                        <item value="健康"/>
+                        <item value="死亡"/>
+                      </model>
+                    </properties>
+                  </component>
+                  <hspacer id="1ae78">
+                    <constraints/>
+                  </hspacer>
+                  <hspacer id="628df">
+                    <constraints/>
+                  </hspacer>
+                  <hspacer id="12912">
+                    <constraints/>
+                  </hspacer>
+                  <component id="70397" class="javax.swing.JLabel">
+                    <constraints/>
+                    <properties>
+                      <text value="ip"/>
+                    </properties>
+                  </component>
+                  <component id="54ae2" class="javax.swing.JComboBox" binding="targetIpComboBox">
+                    <constraints/>
+                    <properties>
+                      <model>
+                        <item value="所有"/>
+                        <item value="本机"/>
+                        <item value="远程"/>
+                      </model>
+                    </properties>
+                  </component>
+                  <hspacer id="2a8b0">
+                    <constraints/>
+                  </hspacer>
+                  <component id="fa25a" class="javax.swing.JLabel">
+                    <constraints/>
+                    <properties>
+                      <text value="服务名"/>
+                    </properties>
+                  </component>
+                  <grid id="76072" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
+                    <constraints/>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="d1b56" class="javax.swing.JTextField" binding="targetServerNameField">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                            <minimum-size width="110" height="28"/>
+                            <preferred-size width="110" height="-1"/>
+                            <maximum-size width="110" height="-1"/>
+                          </grid>
+                        </constraints>
+                        <properties>
+                          <toolTipText value="过滤的服务名"/>
+                        </properties>
+                        <clientProperties>
+                          <caretWidth class="java.lang.Integer" value="4"/>
+                          <html.disable class="java.lang.Boolean" value="true"/>
+                        </clientProperties>
+                      </component>
+                    </children>
+                  </grid>
+                  <hspacer id="8ee0d">
+                    <constraints/>
+                  </hspacer>
+                  <component id="3a15d" class="javax.swing.JButton" binding="freshenTargetButton">
+                    <constraints/>
+                    <properties>
+                      <text value="搜索"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+              <hspacer id="5da4a">
+                <constraints>
+                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+              </hspacer>
+              <grid id="62563" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="2">
+                <constraints>
+                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="e5c12" class="javax.swing.JButton" binding="targetDeregisterButton">
+                    <constraints/>
+                    <properties>
+                      <text value="注销服务"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+            </children>
+          </grid>
         </children>
       </grid>
       <grid id="b4b40" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">

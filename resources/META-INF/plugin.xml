@@ -31,8 +31,8 @@
     <!-- Add your actions here -->
     <action id="NacosRegisterAction" class="com.zhongym.nacos.register.NacosRegisterAction" text="Mall Tool"
             description="Mall Tool">
-      <add-to-group group-id="CodeMenu" anchor="first"/>
-      <keyboard-shortcut keymap="$default" first-keystroke="shift alt R"/>
+      <add-to-group group-id="ToolsMenu" anchor="first"/>
+      <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt R"/>
     </action>
   </actions>
 

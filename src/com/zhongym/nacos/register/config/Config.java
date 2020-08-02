@@ -1,6 +1,7 @@
 package com.zhongym.nacos.register.config;
 
 import com.zhongym.nacos.register.constants.IpEnum;
+import com.zhongym.nacos.register.utils.FileUtils;
 import com.zhongym.nacos.register.utils.LogPrinter;
 
 import java.io.*;
@@ -113,7 +114,11 @@ public class Config implements Serializable {
     }
 
     public void save() {
-        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(new File(Config.class.getName())));) {
+        File file = new File(FileUtils.getConfigDir());
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(new File(FileUtils.getConfigDir(), Config.class.getName())));) {
             outputStream.writeObject(this);
         } catch (Exception e) {
             LogPrinter.print(e);
@@ -122,7 +127,9 @@ public class Config implements Serializable {
 
     public static Config getInstance() {
         if (config == null) {
-            try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(new File(Config.class.getName())));) {
+            String configDir = FileUtils.getConfigDir();
+
+            try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(new File(configDir, Config.class.getName())));) {
                 config = (Config) inputStream.readObject();
             } catch (Exception e) {
                 LogPrinter.print(e);
@@ -137,11 +144,11 @@ public class Config implements Serializable {
     public static void main(String[] args) throws IOException {
         Config instance = Config.getInstance();
         System.out.println(instance.nacosPort.value);
-        instance.nacosPort.setting("97877799");
+        instance.nacosPort.setting("8848");
         instance.save();
 
         ConfigItem nacosPort = instance.nacosPort;
-        nacosPort.setting("1");
+//        nacosPort.setting("1");
         System.out.println(nacosPort.getValue());
 
 
