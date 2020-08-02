@@ -1,11 +1,10 @@
-package com.zhongym.nacos.register.ui;
+package com.zhongym.nacos.tool.ui;
 
-import com.zhongym.nacos.register.config.Config;
-import com.zhongym.nacos.register.utils.LogPrinter;
+import com.zhongym.nacos.tool.config.Config;
+import com.zhongym.nacos.tool.utils.LogPrinter;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 

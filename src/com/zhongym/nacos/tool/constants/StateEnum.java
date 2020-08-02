@@ -1,4 +1,4 @@
-package com.zhongym.nacos.register.constants;
+package com.zhongym.nacos.tool.constants;
 
 /**
  * 所有

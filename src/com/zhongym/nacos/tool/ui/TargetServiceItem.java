@@ -1,10 +1,10 @@
-package com.zhongym.nacos.register.ui;
+package com.zhongym.nacos.tool.ui;
 
 import com.alibaba.nacos.api.naming.pojo.Instance;
-import com.zhongym.nacos.register.config.Config;
-import com.zhongym.nacos.register.utils.MyIconLoader;
-import com.zhongym.nacos.register.utils.NacosService;
-import com.zhongym.nacos.register.utils.ThreadHelper;
+import com.zhongym.nacos.tool.config.Config;
+import com.zhongym.nacos.tool.utils.MyIconLoader;
+import com.zhongym.nacos.tool.utils.NacosService;
+import com.zhongym.nacos.tool.utils.ThreadHelper;
 
 import javax.swing.*;
 import java.awt.*;

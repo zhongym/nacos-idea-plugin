@@ -1,8 +1,8 @@
-package com.zhongym.nacos.register.config;
+package com.zhongym.nacos.tool.config;
 
-import com.zhongym.nacos.register.constants.IpEnum;
-import com.zhongym.nacos.register.utils.FileUtils;
-import com.zhongym.nacos.register.utils.LogPrinter;
+import com.zhongym.nacos.tool.constants.IpEnum;
+import com.zhongym.nacos.tool.utils.FileUtils;
+import com.zhongym.nacos.tool.utils.LogPrinter;
 
 import java.io.*;
 import java.lang.reflect.Field;

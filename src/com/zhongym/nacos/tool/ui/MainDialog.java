@@ -1,16 +1,15 @@
-package com.zhongym.nacos.register.ui;
+package com.zhongym.nacos.tool.ui;
 
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.pojo.Instance;
-import com.zhongym.nacos.register.config.Config;
-import com.zhongym.nacos.register.constants.IpEnum;
-import com.zhongym.nacos.register.constants.ServerStatusEnum;
-import com.zhongym.nacos.register.constants.StateEnum;
-import com.zhongym.nacos.register.utils.*;
+import com.zhongym.nacos.tool.config.Config;
+import com.zhongym.nacos.tool.constants.IpEnum;
+import com.zhongym.nacos.tool.constants.ServerStatusEnum;
+import com.zhongym.nacos.tool.constants.StateEnum;
+import com.zhongym.nacos.tool.utils.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.*;
@@ -80,7 +79,7 @@ public class MainDialog extends JDialog {
     private JButton targetDeregisterButton;
 
     public MainDialog() {
-        setTitle("Mall Tool");
+        setTitle("Nacos Tool");
         setContentPane(contentPane);
         setModal(true);
         //初始化资源
@@ -413,7 +412,7 @@ public class MainDialog extends JDialog {
         ThreadHelper.async(() -> {
             destroy();
         });
-        int s = 5;
+        int s = 6;
         new Thread() {
             @Override
             public void run() {

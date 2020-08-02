@@ -1,11 +1,8 @@
-package com.zhongym.nacos.register.constants;
+package com.zhongym.nacos.tool.constants;
 
-import com.zhongym.nacos.register.utils.LogPrinter;
+import com.zhongym.nacos.tool.utils.LogPrinter;
 
 import java.net.InetAddress;
-import java.net.InterfaceAddress;
-import java.net.UnknownHostException;
-import java.util.List;
 
 /**
  * 所有

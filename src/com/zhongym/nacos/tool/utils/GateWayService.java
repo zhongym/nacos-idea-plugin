@@ -1,9 +1,9 @@
-package com.zhongym.nacos.register.utils;
+package com.zhongym.nacos.tool.utils;
 
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.zhongym.nacos.register.config.Config;
-import com.zhongym.nacos.register.constants.ServerStatusEnum;
+import com.zhongym.nacos.tool.config.Config;
+import com.zhongym.nacos.tool.constants.ServerStatusEnum;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.zhongym.nacos.register.ui.SourceServiceItem">
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.zhongym.nacos.tool.ui.TargetServiceItem">
   <grid id="27dc6" binding="panel" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="0">
     <constraints>
-      <xy x="20" y="20" width="216" height="67"/>
+      <xy x="20" y="20" width="179" height="67"/>
     </constraints>
     <properties/>
     <clientProperties>
@@ -47,12 +47,6 @@
       <hspacer id="78505">
         <constraints/>
       </hspacer>
-      <component id="1b99f" class="javax.swing.JLabel" binding="selectStateField">
-        <constraints/>
-        <properties>
-          <text value=""/>
-        </properties>
-      </component>
     </children>
   </grid>
 </form>

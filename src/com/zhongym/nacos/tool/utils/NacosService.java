@@ -1,14 +1,14 @@
-package com.zhongym.nacos.register.utils;
+package com.zhongym.nacos.tool.utils;
 
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.alibaba.nacos.client.naming.NacosNamingService;
 import com.alibaba.nacos.client.naming.core.HostReactor;
-import com.zhongym.nacos.register.config.Config;
-import com.zhongym.nacos.register.constants.IpEnum;
-import com.zhongym.nacos.register.constants.ServerStatusEnum;
-import com.zhongym.nacos.register.constants.StateEnum;
+import com.zhongym.nacos.tool.config.Config;
+import com.zhongym.nacos.tool.constants.IpEnum;
+import com.zhongym.nacos.tool.constants.ServerStatusEnum;
+import com.zhongym.nacos.tool.constants.StateEnum;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
@@ -166,10 +166,10 @@ public class NacosService {
                 .append(" -Dnacos.home=" + FileUtils.getLogDir("nacos"))
                 .append(" -Dserver.tomcat.basedir=" + FileUtils.getLogDir("nacosTomcat"))
                 .append(" -Dlogging.level.root=debug")
-                .append(" -Dserver.port=").append(com.zhongym.nacos.register.config.Config.getInstance().nacosPort.getValue())
-                .append(" -DnacosDbUrl=").append(com.zhongym.nacos.register.config.Config.getInstance().nacosDbUrl.getValue())
-                .append(" -DnacosDbUser=").append(com.zhongym.nacos.register.config.Config.getInstance().nacosDbUser.getValue())
-                .append(" -DnacosDbPassword=").append(com.zhongym.nacos.register.config.Config.getInstance().nacosDbPassword.getValue())
+                .append(" -Dserver.port=").append(Config.getInstance().nacosPort.getValue())
+                .append(" -DnacosDbUrl=").append(Config.getInstance().nacosDbUrl.getValue())
+                .append(" -DnacosDbUser=").append(Config.getInstance().nacosDbUser.getValue())
+                .append(" -DnacosDbPassword=").append(Config.getInstance().nacosDbPassword.getValue())
                 .append(" ").append(path);
         String command = commands.toString();
         LogPrinter.print("启动命令：" + command);

@@ -1,4 +1,4 @@
-package com.zhongym.nacos.register.contxt;
+package com.zhongym.nacos.tool.contxt;
 
 public class ServiceNameContext {
     private int total;

@@ -1,4 +1,4 @@
-package com.zhongym.nacos.register.utils;
+package com.zhongym.nacos.tool.utils;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
