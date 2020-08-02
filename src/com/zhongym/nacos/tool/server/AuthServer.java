@@ -63,4 +63,8 @@ public class AuthServer extends BaseServer {
     protected void onDestroy() {
         server = null;
     }
+
+    public static void main(String[] args) {
+        getServer().start();
+    }
 }
