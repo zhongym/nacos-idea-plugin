@@ -51,7 +51,7 @@ public class LogPrinter {
     public static synchronized void print(Exception e) {
         LIST.add(" exception: " + e.getMessage());
         flushUI();
-        e.printStackTrace();
+        System.out.println(e.getMessage());
     }
 
     public static void destroy() {

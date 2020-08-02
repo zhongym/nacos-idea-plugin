@@ -18,6 +18,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 /**
@@ -342,26 +343,54 @@ public class MainDialog extends JDialog {
         ThreadHelper.async(() -> {
             destroy();
         });
-        int s = 6;
+        int s = 15;
         new Thread() {
             @Override
             public void run() {
                 MainDialog.this.sleep(s * 1000);
+                System.out.println("异步线程关闭窗口");
                 dispose();
             }
         }.start();
-        JOptionPane.showMessageDialog(this, "开始销毁资源，" + s + "秒钟后关闭窗口", "关闭操作",
-                JOptionPane.WARNING_MESSAGE, MyIconLoader.getIcon("state-down.png"));
+        this.setVisible(false);
+//        JOptionPane.showMessageDialog(this, "开始销毁资源，" + s + "秒钟后强行关闭窗口", "关闭操作",
+//                JOptionPane.WARNING_MESSAGE, MyIconLoader.getIcon("state-down.png"));
+
     }
 
     private void destroy() {
         LogPrinter.print("开始销毁资源,n秒钟后关闭窗口");
-        NacosServer.getServer().destroy();
-        GateWayServer.getServer().destroy();
-        AuthServer.getServer().destroy();
+        CountDownLatch latch = new CountDownLatch(3);
+        ThreadHelper.async(() -> {
+            try {
+                NacosServer.getServer().destroy();
+            } finally {
+                latch.countDown();
+            }
+        });
+        ThreadHelper.async(() -> {
+            try {
+                GateWayServer.getServer().destroy();
+            } finally {
+                latch.countDown();
+            }
+        });
+        ThreadHelper.async(() -> {
+            try {
+                AuthServer.getServer().destroy();
+            } finally {
+                latch.countDown();
+            }
+        });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+        }
         ThreadHelper.destroy();
         LogPrinter.destroy();
         MainDialog.dialog = null;
+        System.out.println("线程池关闭窗口");
+        dispose();
     }
 
     private void createUIComponents() {

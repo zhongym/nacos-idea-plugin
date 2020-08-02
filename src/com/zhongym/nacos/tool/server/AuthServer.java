@@ -59,10 +59,8 @@ public class AuthServer extends BaseServer {
         return "stop-auth.bat";
     }
 
-
     @Override
-    public void destroy() {
+    protected void onDestroy() {
         server = null;
     }
-
 }
