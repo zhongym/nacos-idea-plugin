@@ -392,6 +392,7 @@ public class MainDialog extends JDialog {
             latch.await();
         } catch (InterruptedException e) {
         }
+        NacosService.destroy();
         ThreadHelper.destroy();
         LogPrinter.destroy();
         MainDialog.dialog = null;
