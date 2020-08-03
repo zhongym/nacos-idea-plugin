@@ -158,7 +158,7 @@ public class MainDialog extends JDialog {
 
     private void initTargetNacos() {
         //设置滚动速度
-        sourceScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        targetScollPane.getVerticalScrollBar().setUnitIncrement(16);
 
         targetStateComboBox.removeAllItems();
         for (StateEnum stateEnum : StateEnum.values()) {
@@ -217,7 +217,7 @@ public class MainDialog extends JDialog {
             ThreadHelper.onUIThread(() -> {
                 sourceCheckBoxList.clear();
                 sourceServicePanel.removeAll();
-                sourceServicePanel.setLayout(new GridLayout(10, 2));
+                sourceServicePanel.setLayout(new GridLayout(0, 5));
                 allService.forEach((serviceName, insList) -> {
                     SourceServiceItem item = new SourceServiceItem(MainDialog.this, serviceName, insList);
                     sourceServicePanel.add(item.getPanel());
@@ -253,7 +253,7 @@ public class MainDialog extends JDialog {
             Map<String, List<Instance>> allService = NacosService.getAllService(Config.getLocalNacos(), stateEnum, ipEnum, filterName, false);
             ThreadHelper.onUIThread(() -> {
                 targetServicePanel.removeAll();
-                targetServicePanel.setLayout(new GridLayout(10, 2));
+                targetServicePanel.setLayout(new GridLayout(0, 5));
                 allService.forEach((serviceName, insList) -> {
                     TargetServiceItem item = new TargetServiceItem(MainDialog.this, serviceName, insList);
                     targetServicePanel.add(item.getPanel());
