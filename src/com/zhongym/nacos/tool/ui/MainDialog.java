@@ -112,6 +112,9 @@ public class MainDialog extends JDialog {
     }
 
     private void initSourceNacos() {
+        //设置滚动速度
+        sourceScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
         sourceFilterJobCheckBox.setSelected(true);
         sourceFilterJobCheckBox.addActionListener(e -> {
             flushSourceServicePanel();
@@ -154,6 +157,9 @@ public class MainDialog extends JDialog {
     }
 
     private void initTargetNacos() {
+        //设置滚动速度
+        sourceScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
         targetStateComboBox.removeAllItems();
         for (StateEnum stateEnum : StateEnum.values()) {
             targetStateComboBox.addItem(stateEnum);
