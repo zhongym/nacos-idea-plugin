@@ -3,6 +3,7 @@ package com.zhongym.nacos.tool.ui;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.zhongym.nacos.tool.config.Config;
+import com.zhongym.nacos.tool.config.Namespace;
 import com.zhongym.nacos.tool.constants.IpEnum;
 import com.zhongym.nacos.tool.constants.ServerStatusEnum;
 import com.zhongym.nacos.tool.constants.StateEnum;
@@ -76,6 +77,8 @@ public class MainDialog extends JDialog {
     private JTextField targetServerNameField;
     private JButton freshenTargetButton;
     private JButton targetDeregisterButton;
+    private JComboBox sourceNamespaceBox;
+    private JComboBox targetNamespaceBox;
 
     public MainDialog() {
         setTitle("Nacos Tool");
@@ -152,6 +155,27 @@ public class MainDialog extends JDialog {
             }
         });
         sourceRegisterButton.addActionListener(e -> register());
+
+        ThreadHelper.async(() -> {
+            List<Namespace> namespaces = NacosService.getNamespaces(Config.getRemoteNacos());
+            ThreadHelper.onUIThread(() -> {
+                if (!namespaces.isEmpty()) {
+                    sourceNamespaceBox.removeAllItems();
+                    for (Namespace namespace : namespaces) {
+                        sourceNamespaceBox.addItem(namespace);
+                    }
+                }
+            });
+        });
+
+        sourceNamespaceBox.addActionListener(e -> {
+            Object selectedItem = sourceNamespaceBox.getSelectedItem();
+            if (selectedItem != null) {
+                Namespace namespace = (Namespace) selectedItem;
+                Config.setAndSave(Config.getInstance().sourceNameSpace, namespace.getNamespace());
+            }
+            flushSourceServicePanel();
+        });
         //初始化源注册中心面板
         flushSourceServicePanel();
     }
@@ -191,6 +215,26 @@ public class MainDialog extends JDialog {
             targetDeregister();
         });
 
+        targetNamespaceBox.addActionListener(e -> {
+            Object selectedItem = targetNamespaceBox.getSelectedItem();
+            if (selectedItem != null) {
+                Namespace namespace = (Namespace) selectedItem;
+                Config.setAndSave(Config.getInstance().localNameSpace, namespace.getNamespace());
+            }
+            flushTargetServicePanel();
+        });
+
+        ThreadHelper.async(() -> {
+            List<Namespace> namespaces = NacosService.getNamespaces(Config.getLocalNacos());
+            ThreadHelper.onUIThread(() -> {
+                if (!namespaces.isEmpty()) {
+                    targetNamespaceBox.removeAllItems();
+                    for (Namespace namespace : namespaces) {
+                        targetNamespaceBox.addItem(namespace);
+                    }
+                }
+            });
+        });
         flushTargetServicePanel();
     }
 
@@ -212,7 +256,7 @@ public class MainDialog extends JDialog {
             ThreadHelper.onUIThread(() -> {
                 sourceNacosStateLabel.setIcon(MyIconLoader.getIcon(serverStatus.getIcon()));
             });
-            Map<String, List<Instance>> allService = NacosService.getAllService(Config.getRemoteNacos(),
+            Map<String, List<Instance>> allService = NacosService.getAllService(Config.getRemoteNacos(), Config.getRemoteNameSpace(),
                     filterHealthy ? StateEnum.HEALTH : StateEnum.ALL, IpEnum.ALL, filterName, filterJob);
             ThreadHelper.onUIThread(() -> {
                 sourceCheckBoxList.clear();
@@ -250,7 +294,8 @@ public class MainDialog extends JDialog {
         IpEnum ipEnum = (IpEnum) targetIpComboBox.getSelectedItem();
         String filterName = Optional.ofNullable(targetServerNameField.getText()).map(String::trim).orElse("");
         ThreadHelper.async(() -> {
-            Map<String, List<Instance>> allService = NacosService.getAllService(Config.getLocalNacos(), stateEnum, ipEnum, filterName, false);
+            //
+            Map<String, List<Instance>> allService = NacosService.getAllService(Config.getLocalNacos(), Config.getLocalNameSpace(), stateEnum, ipEnum, filterName, false);
             ThreadHelper.onUIThread(() -> {
                 targetServicePanel.removeAll();
                 targetServicePanel.setLayout(new GridLayout(0, 5));
@@ -274,12 +319,12 @@ public class MainDialog extends JDialog {
         IpEnum ipEnum = (IpEnum) targetIpComboBox.getSelectedItem();
         String filterName = Optional.ofNullable(targetServerNameField.getText()).map(String::trim).orElse("");
         ThreadHelper.async(() -> {
-            Map<String, List<Instance>> allService = NacosService.getAllService(Config.getLocalNacos(), stateEnum, ipEnum, filterName, false);
+            Map<String, List<Instance>> allService = NacosService.getAllService(Config.getLocalNacos(), Config.getLocalNameSpace(), stateEnum, ipEnum, filterName, false);
             allService.forEach((serviceName, insList) -> {
                 LogPrinter.print("注销中..." + serviceName);
                 for (Instance instance : insList) {
                     try {
-                        NacosService.getInstance(Config.getLocalNacos()).deregisterInstance(serviceName, instance);
+                        NacosService.getInstance(Config.getLocalNacos(), Config.getLocalNameSpace()).deregisterInstance(serviceName, instance);
                     } catch (NacosException e) {
                         LogPrinter.print(e);
                     }

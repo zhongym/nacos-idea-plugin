@@ -59,7 +59,7 @@ public class NacosServer extends BaseServer {
     @Override
     protected void onDestroy() {
         try {
-            NacosNamingService instance = NacosService.getInstance(Config.getLocalNacos());
+            NacosNamingService instance = NacosService.getInstance(Config.getLocalNacos(),Config.getLocalNameSpace());
             HostReactor hostReactor = getValue(instance, "hostReactor", HostReactor.class);
             if (hostReactor != null) {
                 ScheduledExecutorService executor = getValue(hostReactor, "executor", ScheduledExecutorService.class);

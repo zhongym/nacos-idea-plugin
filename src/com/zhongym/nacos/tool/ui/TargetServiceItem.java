@@ -47,7 +47,7 @@ public class TargetServiceItem {
                             ThreadHelper.async(() -> {
                                 try {
                                     for (Instance instance : insList) {
-                                        NacosService.getInstance(Config.getLocalNacos()).deregisterInstance(serviceName, instance);
+                                        NacosService.getInstance(Config.getLocalNacos(), Config.getLocalNameSpace()).deregisterInstance(serviceName, instance);
                                     }
                                     ThreadHelper.onUIThread(() -> {
                                         dialog.removeTargetServiceItem(TargetServiceItem.this);

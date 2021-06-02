@@ -132,6 +132,16 @@
               <hspacer id="12525">
                 <constraints/>
               </hspacer>
+              <component id="936ae" class="javax.swing.JLabel">
+                <constraints/>
+                <properties>
+                  <text value="命令空间"/>
+                </properties>
+              </component>
+              <component id="3a223" class="javax.swing.JComboBox" binding="sourceNamespaceBox">
+                <constraints/>
+                <properties/>
+              </component>
               <hspacer id="876b2">
                 <constraints/>
               </hspacer>
@@ -346,6 +356,18 @@
                   <title-color color="-4473925"/>
                 </border>
                 <children>
+                  <component id="181db" class="javax.swing.JLabel">
+                    <constraints/>
+                    <properties>
+                      <text value="命令空间"/>
+                    </properties>
+                  </component>
+                  <component id="e75ea" class="javax.swing.JComboBox" binding="targetNamespaceBox">
+                    <constraints/>
+                    <properties>
+                      <model/>
+                    </properties>
+                  </component>
                   <component id="b3852" class="javax.swing.JLabel">
                     <constraints/>
                     <properties>

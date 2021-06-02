@@ -17,18 +17,39 @@ public class Config implements Serializable {
     public ConfigItem<String> nacosDbUser = new StrConfigItem("本机注册中心数据库用户名", "root");
     public ConfigItem<String> nacosDbPassword = new StrConfigItem("本机注册中心数据库密码", "mall123456");
     public ConfigItem<String> nacosDbUrl = new StrConfigItem("本机注册中心数据库jdbc连接", "jdbc:mysql://mall-mysql:3306/mall_config?characterEncoding=utf8");
-    public ConfigItem<String> sourceServerAddr = new StrConfigItem("源注册中心地址", "192.168.2.33:8848");
+    public ConfigItem<String> sourceServerAddr = new StrConfigItem("源注册中心地址", "192.168.20.143:8848");
+    public ConfigItem<String> sourceNameSpace = new StrConfigItem("源注册中心命名空间", "");
+    public ConfigItem<String> localNameSpace = new StrConfigItem("本机注册中心命名空间", "");
+    public ConfigItem<String> nacosGroupName = new StrConfigItem("注册中心分组名称", "yibuyun");
     public ConfigItem<Integer> gatewayPort = new IntConfigItem("本机网关端口", 9999);
     public ConfigItem<Integer> authPort = new IntConfigItem("本机auth端口", 3000);
     public ConfigItem<Integer> serverFlushInterval = new IntConfigItem("服务刷新间隔秒", 5);
+
+    public static void setAndSave(ConfigItem item, String v) {
+        item.setting(v);
+        Config.getInstance().save();
+    }
 
     public static String getLocalNacos() {
         return IpEnum.getLoopbackAddress() + ":" + Config.getInstance().nacosPort.getValue();
     }
 
+    public static String getNacosGropName() {
+        return Config.getInstance().nacosGroupName.getValue();
+    }
+
     public static String getRemoteNacos() {
         return Config.getInstance().sourceServerAddr.getValueString();
     }
+
+    public static String getRemoteNameSpace() {
+        return Config.getInstance().sourceNameSpace.getValueString();
+    }
+
+    public static String getLocalNameSpace() {
+        return Config.getInstance().localNameSpace.getValueString();
+    }
+
 
     public static String getGatewayUrl() {
         return "http://" + IpEnum.getLoopbackAddress() + ":" + Config.getInstance().gatewayPort.getValue();

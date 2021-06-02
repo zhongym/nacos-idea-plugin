@@ -67,7 +67,7 @@ public class SourceServiceItem {
                                 }
                                 try {
                                     for (Instance instance : insList) {
-                                        NacosService.getInstance(Config.getLocalNacos()).registerInstance(serviceName, instance);
+                                        NacosService.getInstance(Config.getLocalNacos(),Config.getLocalNameSpace()).registerInstance(serviceName, instance);
                                     }
                                     ThreadHelper.onUIThread(() -> {
                                         dialog.showSourceNacosLog("注册完成，等待界面刷新");
